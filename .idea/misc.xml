@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/activity_identification.xml" value="0.11458333333333333" />
         <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/fragment_login.xml" value="0.33" />
+        <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/fragment_register.xml" value="0.33" />
       </map>
     </option>
   </component>
