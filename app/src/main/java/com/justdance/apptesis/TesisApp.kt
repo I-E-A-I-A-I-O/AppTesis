@@ -1,9 +1,9 @@
 package com.justdance.apptesis
 
 import android.os.Bundle
-import android.widget.GridLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -21,37 +20,43 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.justdance.apptesis.screens.login.LoginScreen
+import com.justdance.apptesis.screens.login.LoginViewModel
+import com.justdance.apptesis.screens.register.RegisterScreen
+import com.justdance.apptesis.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
-import kotlin.math.exp
 
 class MainActivity : ComponentActivity() {
+
+    private val loginViewModel by viewModels<LoginViewModel>()
+    private val registerViewModel by viewModels<RegisterViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navHost = rememberNavController()
-            AppTesisTheme() {
-                NavHost(navController = navHost, startDestination = "login") {
-                    composable("login") {  }
-                    composable("register") {  }
+            TesisApp()
+        }
+    }
+
+    @Composable
+    fun TesisApp() {
+        val navHost = rememberNavController()
+        AppTesisTheme {
+            NavHost(navController = navHost, startDestination = "identification") {
+                navigation(startDestination = "login", route = "identification") {
+                    composable("login") { LoginScreen(navController = navHost, viewModel = loginViewModel) }
+                    composable("register") { RegisterScreen(navController = navHost, viewModel = registerViewModel) }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun TesisApp() {
-    AppTesisTheme {
-
     }
 }
 
@@ -112,7 +117,7 @@ fun Conversation(messages: List<Message>) {
 @Preview(showBackground = true, device = Devices.PIXEL_4)
 @Composable
 fun DefaultPreview() {
-    AppTesisTheme() {
+    AppTesisTheme {
         Conversation(messages = SampleData.conversationSample)
     }
 }
