@@ -27,7 +27,7 @@ fun Dropdown(items: List<String>, index: Int, onItemSelected: (index: Int) -> Un
     Surface(elevation = 1.dp, modifier = Modifier.padding(8.dp)) {
         Box {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                .width(260.dp)
+                .width(270.dp)
                 .padding(8.dp)
                 .clickable { expanded = true }) {
                 Box(modifier = Modifier.fillMaxWidth(0.8f)) {

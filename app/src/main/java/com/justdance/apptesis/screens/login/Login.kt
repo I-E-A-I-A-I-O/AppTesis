@@ -26,7 +26,7 @@ import com.justdance.apptesis.R
 
 @ExperimentalComposeUiApi
 @Composable
-fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
+fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMessage: (String) -> Unit) {
     val email: String by viewModel.emailText.observeAsState("")
     val pass: String by viewModel.passText.observeAsState("")
     val (pField) = remember { FocusRequester.createRefs() }
@@ -64,7 +64,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel) {
                             onValueChange = {
                                     s -> viewModel.emailChanged(s)
                             })
-                        Spacer(modifier = Modifier.height(25.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             modifier = Modifier.width(290.dp).padding(8.dp).focusRequester(pField),
                             singleLine = true,

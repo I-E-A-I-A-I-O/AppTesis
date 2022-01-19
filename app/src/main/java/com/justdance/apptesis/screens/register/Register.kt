@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
-fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
+fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, showMessage: (String) -> Unit) {
     val items = listOf("Carrera", "Ingenieria en Computacion", "Ingenieria Quimica", "Ingenieria Electrica",
         "Ingenieria en Telecomunicaciones", "Ingenieria Industrial")
     val email: String by viewModel.emailText.observeAsState("")
@@ -50,8 +50,6 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
     val confirmUpdated = { s: String -> viewModel.confirmPassChanged(s) }
     var indexValid by remember { mutableStateOf(false) }
     var formValid by remember { mutableStateOf(false) }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val onButtonPressed = {
         if (!formValid) {
             val snackText: String = if (!nameValid) {
@@ -67,10 +65,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
             } else {
                 ""
             }
-
-            scope.launch {
-                snackbarHostState.showSnackbar(snackText)
-            }
+            showMessage(snackText)
         }
     }
 
@@ -110,9 +105,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel) {
                 indexValid = selectedIndex != 0
                 formValid = nameValid && emailValid && passwordValid && confirmValid && indexValid
             }
-            Row(modifier = Modifier.fillMaxHeight()) {
-                SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.Bottom))
-            }
+            Spacer(modifier = Modifier.height(70.dp))
         }
     }
 }
@@ -154,7 +147,7 @@ fun RegisterForm(
                     OutlinedTextField(
                         modifier = Modifier
                             .focusRequester(nField)
-                            .width(290.dp),
+                            .width(280.dp),
                         singleLine = true,
                         keyboardActions = KeyboardActions(
                             onNext = { eField.requestFocus() }
@@ -174,7 +167,7 @@ fun RegisterForm(
                     OutlinedTextField(
                         modifier = Modifier
                             .focusRequester(eField)
-                            .width(290.dp),
+                            .width(280.dp),
                         keyboardActions = KeyboardActions(
                             onNext = { p1Field.requestFocus() }
                         ),
@@ -212,7 +205,7 @@ fun RegisterForm(
                         },
                         modifier = Modifier
                             .focusRequester(p1Field)
-                            .width(290.dp),
+                            .width(280.dp),
                         keyboardActions = KeyboardActions(
                             onNext = { p2Field.requestFocus() }
                         ),
@@ -231,7 +224,7 @@ fun RegisterForm(
                         visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
                         modifier = Modifier
                             .focusRequester(p2Field)
-                            .width(290.dp),
+                            .width(280.dp),
                         singleLine = true,
                         keyboardActions = KeyboardActions(
                             onDone = {

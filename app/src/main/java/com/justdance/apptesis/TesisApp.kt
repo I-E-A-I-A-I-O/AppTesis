@@ -15,10 +15,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,6 +34,7 @@ import com.justdance.apptesis.screens.login.LoginViewModel
 import com.justdance.apptesis.screens.register.RegisterScreen
 import com.justdance.apptesis.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -57,13 +55,41 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun TesisApp() {
         val navHost = rememberNavController()
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState)
+        val scope = rememberCoroutineScope()
+
         AppTesisTheme {
-            NavHost(navController = navHost, startDestination = "identification") {
-                navigation(startDestination = "login", route = "identification") {
-                    composable("login") { LoginScreen(navController = navHost, viewModel = loginViewModel) }
-                    composable("register") { RegisterScreen(navController = navHost, viewModel = registerViewModel) }
+            Scaffold(
+                scaffoldState = scaffoldState
+            ) {
+                NavHost(navController = navHost, startDestination = "identification") {
+                    navigation(startDestination = "login", route = "identification") {
+                        composable("login") {
+                            LoginScreen(navController = navHost, viewModel = loginViewModel) {
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(it)
+                                }
+                            }
+                        }
+                        composable("register") {
+                            RegisterScreen(navController = navHost, viewModel = registerViewModel) {
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(it)
+                                }
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    fun TopBarRoute(route: String): Boolean {
+        return when (route) {
+            "login" -> false
+            "register" -> false
+            else -> true
         }
     }
 }
