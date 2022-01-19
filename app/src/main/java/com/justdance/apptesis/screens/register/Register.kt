@@ -1,5 +1,6 @@
 package com.justdance.apptesis.screens.register
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -38,6 +39,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
     val pass: String by viewModel.passText.observeAsState("")
     val pass2: String by viewModel.confirmPassText.observeAsState(initial = "")
     val name: String by viewModel.nameText.observeAsState("")
+    val isLoading: Boolean by viewModel.isLoading.observeAsState(false)
     var selectedIndex by remember { mutableStateOf(0) }
     val scrollState = rememberScrollState(0)
     var emailValid by remember { mutableStateOf(false) }
@@ -95,6 +97,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
                 onConfirmUpdated = confirmUpdated,
                 indexValid = indexValid,
                 formValid = formValid,
+                loading = isLoading,
                 onButtonPressed = onButtonPressed,
                 onIndexChanged = { selectedIndex = it }
             ) {
@@ -104,6 +107,9 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
                 confirmValid = pass2 == pass
                 indexValid = selectedIndex != 0
                 formValid = nameValid && emailValid && passwordValid && confirmValid && indexValid
+            }
+            AnimatedVisibility(visible = isLoading) {
+                LinearProgressIndicator(Modifier.width(300.dp))
             }
             Spacer(modifier = Modifier.height(70.dp))
         }
@@ -131,13 +137,13 @@ fun RegisterForm(
     onIndexChanged: (Int) -> Unit,
     indexValid: Boolean,
     formValid: Boolean,
+    loading: Boolean,
     onButtonPressed: () -> Unit,
     validate: () -> Unit
 ) {
     val (nField, eField, p1Field, p2Field) = remember { FocusRequester.createRefs() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var visible by remember { mutableStateOf(false) }
-
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         Column {
             Text(text = "Registrate", style = MaterialTheme.typography.h3)
@@ -245,13 +251,14 @@ fun RegisterForm(
                         label = { Text("Confirmar contraseña") } )
                     Spacer(modifier = Modifier.height(30.dp))
                     Button(
+                        enabled = !loading,
                         onClick =
                         {
                             validate()
                             onButtonPressed()
                         },
                         modifier = Modifier.width(280.dp)) {
-                        Text(text = "Registrarse")
+                        Text(text = if (loading) "Registrando..." else "Registrarse")
                     }
                 }
             }
