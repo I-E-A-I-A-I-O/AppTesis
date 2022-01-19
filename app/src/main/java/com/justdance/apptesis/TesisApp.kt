@@ -1,9 +1,11 @@
 package com.justdance.apptesis
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -14,9 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -39,6 +43,8 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<LoginViewModel>()
     private val registerViewModel by viewModels<RegisterViewModel>()
 
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -46,6 +52,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalComposeUiApi
+    @ExperimentalAnimationApi
     @Composable
     fun TesisApp() {
         val navHost = rememberNavController()
@@ -89,7 +97,6 @@ fun MessageCard(msg: Message)
                 style = MaterialTheme.typography.subtitle2
                 )
             Spacer(modifier = Modifier.height(4.dp))
-
             Surface( modifier = Modifier
                 .animateContentSize()
                 .padding(1.dp), shape = MaterialTheme.shapes.medium, elevation = 1.dp, color = surfaceColor) {
