@@ -25,14 +25,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.justdance.apptesis.R
+import com.justdance.apptesis.SnackActions
 import com.justdance.apptesis.ui.composables.Dropdown
 import com.justdance.apptesis.utils.isValidEmail
-import kotlinx.coroutines.launch
 
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
-fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, showMessage: (String) -> Unit) {
+fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel,
+                   showMessage: (String, String?, SnackActions) -> Unit) {
     val items = listOf("Carrera", "Ingenieria en Computacion", "Ingenieria Quimica", "Ingenieria Electrica",
         "Ingenieria en Telecomunicaciones", "Ingenieria Industrial")
     val email: String by viewModel.emailText.observeAsState("")
@@ -52,6 +53,10 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
     val confirmUpdated = { s: String -> viewModel.confirmPassChanged(s) }
     var indexValid by remember { mutableStateOf(false) }
     var formValid by remember { mutableStateOf(false) }
+    val ci: String by viewModel.ciText.observeAsState("")
+    val ciUpdated = { s: String -> viewModel.ciChanged(s) }
+    var ciValid by remember { mutableStateOf(false) }
+
     val onButtonPressed = {
         if (!formValid) {
             val snackText: String = if (!nameValid) {
@@ -64,10 +69,18 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
                 "Contraseña vacia o muy larga."
             } else if (!confirmValid) {
                 "Las contraseñas no coinciden."
+            } else if (!ciValid) {
+              "C.I vacia o invalida."
             } else {
                 ""
             }
-            showMessage(snackText)
+            showMessage(snackText, null, SnackActions.NONE)
+        } else {
+            viewModel.register(items[selectedIndex]) {
+                message, success ->
+                showMessage(message, if(success) "Iniciar Sesion" else null,
+                    if(success) SnackActions.REGISTER_GOTO_LOGIN else SnackActions.NONE)
+            }
         }
     }
 
@@ -97,6 +110,9 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
                 onConfirmUpdated = confirmUpdated,
                 indexValid = indexValid,
                 formValid = formValid,
+                ci = ci,
+                ciUpdated = ciUpdated,
+                ciValid = ciValid,
                 loading = isLoading,
                 onButtonPressed = onButtonPressed,
                 onIndexChanged = { selectedIndex = it }
@@ -106,10 +122,13 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel, s
                 passwordValid = pass.isNotEmpty() && pass.length <= 30
                 confirmValid = pass2 == pass
                 indexValid = selectedIndex != 0
-                formValid = nameValid && emailValid && passwordValid && confirmValid && indexValid
+                ciValid = ci.isNotEmpty() && ci.matches("^[0-9]*\$".toRegex())
+                formValid = nameValid && emailValid && passwordValid && confirmValid && indexValid && ciValid
             }
             AnimatedVisibility(visible = isLoading) {
-                LinearProgressIndicator(Modifier.width(300.dp))
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    LinearProgressIndicator(Modifier.width(300.dp))
+                }
             }
             Spacer(modifier = Modifier.height(70.dp))
         }
@@ -135,6 +154,9 @@ fun RegisterForm(
     confirmValid: Boolean,
     selectedIndex: Int,
     onIndexChanged: (Int) -> Unit,
+    ciValid: Boolean,
+    ci: String,
+    ciUpdated: (String) -> Unit,
     indexValid: Boolean,
     formValid: Boolean,
     loading: Boolean,
@@ -150,6 +172,26 @@ fun RegisterForm(
             Spacer(Modifier.height(8.dp))
             Card {
                 Column(modifier = Modifier.padding(8.dp)) {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .width(280.dp),
+                        singleLine = true,
+                        keyboardActions = KeyboardActions(
+                            onNext = { nField.requestFocus() }
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Number
+                        ),
+                        isError = !ciValid,
+                        value = ci,
+                        onValueChange =
+                        {
+                            ciUpdated(it)
+                            validate()
+                        },
+                        label = { Text("Cedula de identidad") } )
+                    Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         modifier = Modifier
                             .focusRequester(nField)

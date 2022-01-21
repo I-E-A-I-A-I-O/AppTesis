@@ -1,7 +1,6 @@
 package com.justdance.apptesis
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -25,21 +24,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.justdance.apptesis.screens.login.LoginScreen
 import com.justdance.apptesis.screens.login.LoginViewModel
 import com.justdance.apptesis.screens.register.RegisterScreen
 import com.justdance.apptesis.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel by viewModels<LoginViewModel>()
     private val registerViewModel by viewModels<RegisterViewModel>()
+    private lateinit var scope: CoroutineScope
+    private lateinit var scaffoldState: ScaffoldState
+    private lateinit var navHost: NavHostController
 
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
@@ -54,30 +60,53 @@ class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
     @Composable
     fun TesisApp() {
-        val navHost = rememberNavController()
-        val snackbarHostState = remember { SnackbarHostState() }
-        val scaffoldState = rememberScaffoldState(snackbarHostState = snackbarHostState)
-        val scope = rememberCoroutineScope()
+        navHost = rememberNavController()
+        scaffoldState = rememberScaffoldState()
+        scope = rememberCoroutineScope()
 
         AppTesisTheme {
             Scaffold(
                 scaffoldState = scaffoldState
             ) {
                 NavHost(navController = navHost, startDestination = "identification") {
-                    navigation(startDestination = "login", route = "identification") {
-                        composable("login") {
-                            LoginScreen(navController = navHost, viewModel = loginViewModel) {
-                                scope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(it)
+                    navigation(startDestination = "login?redirected={redirected}", route = "identification") {
+                        composable(
+                            "login?redirected={redirected}",
+                            arguments = listOf(navArgument("redirected") {defaultValue = false; type = NavType.BoolType})
+                        ) { backStackEntry ->
+                            backStackEntry.arguments?.let {
+                                if (it.getBoolean("redirected")) {
+                                    loginViewModel.ciChanged(registerViewModel.ciText.value!!)
+                                    loginViewModel.passChanged(registerViewModel.passText.value!!)
                                 }
+                            }
+                            LoginScreen(navController = navHost, viewModel = loginViewModel) {
+                                    message, actionLabel, action ->
+                                onSnack(message, actionLabel, action)
                             }
                         }
                         composable("register") {
                             RegisterScreen(navController = navHost, viewModel = registerViewModel) {
-                                scope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(it)
-                                }
+                                    message, actionLabel, action ->
+                                onSnack(message, actionLabel, action)
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onSnack(message: String, actionLabel: String?, action: SnackActions) {
+        scope.launch {
+            val result = scaffoldState.snackbarHostState.showSnackbar(message, actionLabel)
+            if (result == SnackbarResult.Dismissed) return@launch
+            when (action) {
+                SnackActions.NONE -> {}
+                SnackActions.REGISTER_GOTO_LOGIN -> {
+                    navHost.navigate("login?redirected=true") {
+                        popUpTo("login?redirected={redirected}") {
+                            inclusive = true
                         }
                     }
                 }
@@ -92,6 +121,11 @@ class MainActivity : ComponentActivity() {
             else -> true
         }
     }
+}
+
+enum class SnackActions {
+    NONE,
+    REGISTER_GOTO_LOGIN
 }
 
 data class Message(val author: String, val body: String)

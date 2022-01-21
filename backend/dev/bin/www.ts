@@ -6,12 +6,14 @@
 
 import {app} from "../app"
 import http from "http"
+import logger from "../utils/logger"
+import {connectToDatabase} from "../services/database.service";
 
 /**
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '8000');
 app.set('port', port);
 
 /**
@@ -24,15 +26,22 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+connectToDatabase()
+    .then(() => {
+      server.listen(port);
+      server.on('error', onError);
+      server.on('listening', onListening);
+    })
+    .catch((error: Error) => {
+      logger.error(`Database connection failed. ${error}`);
+      process.exit();
+    });
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val: string) {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -52,7 +61,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error: { syscall: string; code: any; }) {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -85,5 +94,5 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  console.debug(`listening on port ${bind}`);
+  logger.info(`Server running on port ${bind}`);
 }

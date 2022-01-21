@@ -5,14 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class LoginViewModel: ViewModel() {
-    private var _emailText = MutableLiveData("")
-    val emailText: LiveData<String> = _emailText
+    private var _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private var _ciText = MutableLiveData("")
+    val ciText: LiveData<String> = _ciText
 
     private var _passText = MutableLiveData("")
     val passText: LiveData<String> = _passText
 
-    fun emailChanged(newVal: String) {
-        _emailText.value = newVal
+    fun ciChanged(newVal: String) {
+        _ciText.value = newVal
     }
 
     fun passChanged(newVal: String) {

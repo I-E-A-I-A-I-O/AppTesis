@@ -23,12 +23,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavOptions
 import com.justdance.apptesis.R
+import com.justdance.apptesis.SnackActions
 
 @ExperimentalComposeUiApi
 @Composable
-fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMessage: (String) -> Unit) {
-    val email: String by viewModel.emailText.observeAsState("")
+fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
+                showMessage: (String, String?, SnackActions) -> Unit) {
+    val ci: String by viewModel.ciText.observeAsState("")
     val pass: String by viewModel.passText.observeAsState("")
+    val loading: Boolean by viewModel.isLoading.observeAsState(false)
     val (pField) = remember { FocusRequester.createRefs() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val state = rememberScrollState(0)
@@ -36,7 +39,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMes
     Surface {
         Column(modifier = Modifier.verticalScroll(state)) {
             Box(contentAlignment = Alignment.Center, modifier = Modifier
-                .fillMaxSize().padding(top = 60.dp)) {
+                .fillMaxSize()
+                .padding(top = 60.dp)) {
                 Text(text = "App Tesis", style = MaterialTheme.typography.h2)
             }
             Spacer(modifier = Modifier.height(45.dp))
@@ -48,25 +52,30 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMes
                             .align(Alignment.Center)
                             .padding(8.dp)) {
                         OutlinedTextField(
-                            modifier = Modifier.width(290.dp).padding(8.dp),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(8.dp),
                             singleLine = true,
                             label = {
-                                Text(text = "Correo")
+                                Text(text = "Cedula de identidad")
                             },
                             keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email,
+                                keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Next
                             ),
                             keyboardActions = KeyboardActions(
                                 onNext = { pField.requestFocus() }
                             ),
-                            value = email,
+                            value = ci,
                             onValueChange = {
-                                    s -> viewModel.emailChanged(s)
+                                    s -> viewModel.ciChanged(s)
                             })
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
-                            modifier = Modifier.width(290.dp).padding(8.dp).focusRequester(pField),
+                            modifier = Modifier
+                                .width(290.dp)
+                                .padding(8.dp)
+                                .focusRequester(pField),
                             singleLine = true,
                             label = {
                                 Text(text = "Contraseña")
@@ -87,8 +96,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMes
                                     s -> viewModel.passChanged(s)
                             })
                         Spacer(modifier = Modifier.height(30.dp))
-                        Button(onClick = { /*TODO*/ }, modifier = Modifier.width(280.dp)) {
-                            Text(text = "Iniciar sesion")
+                        Button(enabled = !loading, onClick = { /*TODO*/ }, modifier = Modifier.width(280.dp)) {
+                            Text(text = if (loading) "Iniciando sesion..." else "Iniciar sesion")
                         }
                     }
                 }
@@ -101,8 +110,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel, showMes
                     color = MaterialTheme.colors.surface) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
                        Text(text = "No estas registrado?") 
-                        TextButton(onClick = { navController.navigate("register", NavOptions.Builder().setEnterAnim(
-                            R.anim.nav_default_pop_enter_anim).build()) }) {
+                        TextButton(enabled = !loading,
+                            onClick = { navController.navigate("register") }) {
                             Text(text = "Registrate")
                         }
                     }
