@@ -1,5 +1,8 @@
 package com.justdance.apptesis.screens.login
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,14 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavOptions
 import com.justdance.apptesis.R
 import com.justdance.apptesis.SnackActions
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
@@ -36,6 +42,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
     var formValid by remember { mutableStateOf(false) }
     var passValid by remember { mutableStateOf(false) }
     var ciValid by remember { mutableStateOf(false) }
+    var hide by remember { mutableStateOf(true) }
     val validateForm = {
         ciValid = ci.isNotEmpty() && ci.matches("^[0-9]*\$".toRegex())
         passValid = pass.isNotEmpty() && pass.length <= 30
@@ -87,7 +94,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                                 .width(290.dp)
                                 .padding(8.dp),
                             singleLine = true,
-                            isError = ciValid,
+                            isError = !ciValid,
                             label = {
                                 Text(text = "Cedula de identidad")
                             },
@@ -111,19 +118,28 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                                 .padding(8.dp)
                                 .focusRequester(pField),
                             singleLine = true,
-                            isError = passValid,
+                            isError = !passValid,
+                            trailingIcon = {
+                                Icon(painter = painterResource(
+                                    id = if (!hide) R.drawable.ic_baseline_visibility_24
+                                    else R.drawable.ic_baseline_visibility_off_24),
+                                    contentDescription = if (!hide) "Ofuscar contraseña." else "Mostrar contraseña.",
+                                    modifier = Modifier.clickable { hide = !hide })
+                            },
                             label = {
                                 Text(text = "Contraseña")
                             },
-                            visualTransformation = PasswordVisualTransformation(),
+                            visualTransformation = if (hide) PasswordVisualTransformation() else VisualTransformation.None,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Done,
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     keyboardController?.hide()
                                     pField.freeFocus()
+                                    validateForm()
+                                    onLogin()
                                 }
                             ),
                             value = pass,
@@ -143,6 +159,11 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                             Text(text = if (loading) "Iniciando sesion..." else "Iniciar sesion")
                         }
                     }
+                }
+            }
+            AnimatedVisibility(visible = loading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    LinearProgressIndicator(Modifier.width(300.dp))
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))

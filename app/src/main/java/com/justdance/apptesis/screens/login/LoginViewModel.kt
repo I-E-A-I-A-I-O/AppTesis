@@ -53,6 +53,11 @@ class LoginViewModel(app: Application): AndroidViewModel(app) {
                         response.body()?.let {
                             loginResponse: LoginResponse ->
                             viewModelScope.launch {
+                                val result = sessionRepo.getSession()
+
+                                if (result.isNotEmpty())
+                                    sessionRepo.deleteSession(result.first())
+
                                 sessionRepo.insertSession(Session(0, loginResponse.token, loginResponse.name, loginResponse.email, loginResponse.ci))
                             }.invokeOnCompletion {
                                 _isLoading.value = false
