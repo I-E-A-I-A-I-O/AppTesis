@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Session (
     @PrimaryKey val id: Int,
+    @ColumnInfo(name = "token") val token: String,
     @ColumnInfo(name = "user_name") val name: String,
     @ColumnInfo(name = "user_email") val email: String,
     @ColumnInfo(name = "user_ci") val ci: String

@@ -52,7 +52,18 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
             }
             showMessage(snackText, null, SnackActions.NONE)
         } else {
-
+            viewModel.login {
+                message, success ->
+                if (success) {
+                    navController.navigate("homeNav") {
+                        popUpTo("login?redirected={redirected}") {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    showMessage(message, null, SnackActions.NONE)
+                }
+            }
         }
     }
 

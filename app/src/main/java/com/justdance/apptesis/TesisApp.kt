@@ -31,6 +31,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.justdance.apptesis.screens.home.HomeScreen
+import com.justdance.apptesis.screens.home.HomeViewModel
 import com.justdance.apptesis.screens.login.LoginScreen
 import com.justdance.apptesis.screens.login.LoginViewModel
 import com.justdance.apptesis.screens.register.RegisterScreen
@@ -46,6 +48,7 @@ class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<LoginViewModel>()
     private val registerViewModel by viewModels<RegisterViewModel>()
     private val startViewModel by viewModels<StartViewModel>()
+    private val homeViewModel by viewModels<HomeViewModel>()
     private lateinit var scope: CoroutineScope
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
@@ -96,6 +99,11 @@ class MainActivity : ComponentActivity() {
                                     message, actionLabel, action ->
                                 onSnack(message, actionLabel, action)
                             }
+                        }
+                    }
+                    navigation("home", "homeNav") {
+                        composable("home") {
+                            HomeScreen(navController = navHost, viewModel = homeViewModel)
                         }
                     }
                 }
