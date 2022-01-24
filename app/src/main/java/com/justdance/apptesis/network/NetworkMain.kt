@@ -12,10 +12,7 @@ import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -28,9 +25,8 @@ interface Requests {
     @POST("users/user")
     fun login(@Body loginForm: UserLogin): Call<LoginResponse>
 
-    @Headers("Content-Type: application/json")
-    @POST("users/user/token")
-    fun session(@Body token: SessionVerify): Call<GenericResponse>
+    @GET("users/user/token")
+    fun session(@Header("authorization") token: String): Call<GenericResponse>
 }
 
 class Network {

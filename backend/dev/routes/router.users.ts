@@ -1,7 +1,16 @@
 import express, {Request, Response} from "express";
-import {insertUser} from "../controllers/controllers.users"
+import {insertUser, userLogin} from "../controllers/controllers.users"
+import {authenticateToken} from "../utils/token.middleware";
 export const usersRouter = express.Router();
 
 usersRouter.post('/', async (req: Request, res: Response) => {
     await insertUser(req, res)
+})
+
+usersRouter.get('/user/token', authenticateToken, async (req: Request, res: Response) => {
+    res.sendStatus(200)
+})
+
+usersRouter.post('/user', async (req: Request, res: Response) => {
+    await userLogin(req, res)
 })

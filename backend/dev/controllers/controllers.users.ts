@@ -4,6 +4,8 @@ import logger from "../utils/logger"
 import { collections } from "../services/database.service";
 import User from "../models/user";
 import bcrypt from "bcrypt"
+import Login from "../models/login";
+import {generateToken} from "../utils/token.middleware";
 
 export const insertUser = async (req: Request, res: Response) => {
     try {
@@ -28,4 +30,31 @@ export const insertUser = async (req: Request, res: Response) => {
         logger.error(e)
         res.status(400).json({message: "Error registrando la cuenta."})
     }
+}
+
+export const userLogin = async (req: Request, res: Response) => {
+    const login = req.body as Login
+    const search = (await collections.users.findOne({ci: login.ci})) as unknown as User
+
+    if (!search) {
+        logger.info('failed login due to invalid CI')
+        return res.status(404).json({message: "C.I no registrado."})
+    }
+
+    const same = await bcrypt.compare(login.password, search.password)
+
+    if (!same) {
+        logger.info(`failed login due to invalid password for ${login.ci}`)
+        return res.status(403).json({message: "Contraseña incorrecta."})
+    }
+
+    const token = generateToken(login.ci)
+    logger.info(`Login successful for ${login.ci}`)
+    return res.status(201).json({
+        message: "Inicio de sesion exitoso",
+        token: token,
+        email: search.email,
+        name: search.name,
+        ci: search.ci
+    })
 }

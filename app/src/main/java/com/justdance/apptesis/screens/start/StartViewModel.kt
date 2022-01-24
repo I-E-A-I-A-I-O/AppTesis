@@ -35,7 +35,7 @@ class StartViewModel(app: Application): AndroidViewModel(app) {
                 onResponse("", false)
             } else {
                 val net = Network()
-                net.service.session(SessionVerify(session!!.token)).enqueue(
+                net.service.session(session!!.token).enqueue(
                     object: Callback<GenericResponse> {
                         override fun onResponse(
                             call: Call<GenericResponse>,
