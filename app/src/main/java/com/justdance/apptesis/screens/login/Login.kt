@@ -6,11 +6,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.NavController
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +33,28 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
     val (pField) = remember { FocusRequester.createRefs() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val state = rememberScrollState(0)
+    var formValid by remember { mutableStateOf(false) }
+    var passValid by remember { mutableStateOf(false) }
+    var ciValid by remember { mutableStateOf(false) }
+    val validateForm = {
+        ciValid = ci.isNotEmpty() && ci.matches("^[0-9]*\$".toRegex())
+        passValid = pass.isNotEmpty() && pass.length <= 30
+        formValid = ciValid && passValid
+    }
+    val onLogin = {
+        if (!formValid) {
+            val snackText: String = if (!ciValid) {
+                "Cedula invalida."
+            } else if (!passValid) {
+                "Contraseña vacia o my larga."
+            } else {
+                ""
+            }
+            showMessage(snackText, null, SnackActions.NONE)
+        } else {
+
+        }
+    }
 
     Surface {
         Column(modifier = Modifier.verticalScroll(state)) {
@@ -56,6 +76,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                                 .width(290.dp)
                                 .padding(8.dp),
                             singleLine = true,
+                            isError = ciValid,
                             label = {
                                 Text(text = "Cedula de identidad")
                             },
@@ -68,7 +89,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                             ),
                             value = ci,
                             onValueChange = {
-                                    s -> viewModel.ciChanged(s)
+                                    s ->
+                                viewModel.ciChanged(s)
+                                validateForm()
                             })
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
@@ -77,6 +100,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                                 .padding(8.dp)
                                 .focusRequester(pField),
                             singleLine = true,
+                            isError = passValid,
                             label = {
                                 Text(text = "Contraseña")
                             },
@@ -93,10 +117,18 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
                             ),
                             value = pass,
                             onValueChange = {
-                                    s -> viewModel.passChanged(s)
+                                    s ->
+                                viewModel.passChanged(s)
+                                validateForm()
                             })
                         Spacer(modifier = Modifier.height(30.dp))
-                        Button(enabled = !loading, onClick = { /*TODO*/ }, modifier = Modifier.width(280.dp)) {
+                        Button(
+                            enabled = !loading,
+                            onClick = {
+                                validateForm()
+                                onLogin()
+                            },
+                            modifier = Modifier.width(280.dp)) {
                             Text(text = if (loading) "Iniciando sesion..." else "Iniciar sesion")
                         }
                     }

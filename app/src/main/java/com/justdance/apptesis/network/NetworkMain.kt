@@ -1,5 +1,6 @@
 package com.justdance.apptesis.network
 
+import com.justdance.apptesis.network.request.SessionVerify
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.GenericResponse
@@ -26,6 +27,10 @@ interface Requests {
     @Headers("Content-Type: application/json")
     @POST("users/user")
     fun login(@Body loginForm: UserLogin): Call<LoginResponse>
+
+    @Headers("Content-Type: application/json")
+    @POST("users/user/token")
+    fun session(@Body token: SessionVerify): Call<GenericResponse>
 }
 
 class Network {

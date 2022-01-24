@@ -35,6 +35,8 @@ import com.justdance.apptesis.screens.login.LoginScreen
 import com.justdance.apptesis.screens.login.LoginViewModel
 import com.justdance.apptesis.screens.register.RegisterScreen
 import com.justdance.apptesis.screens.register.RegisterViewModel
+import com.justdance.apptesis.screens.start.StartScreen
+import com.justdance.apptesis.screens.start.StartViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
     private val loginViewModel by viewModels<LoginViewModel>()
     private val registerViewModel by viewModels<RegisterViewModel>()
+    private val startViewModel by viewModels<StartViewModel>()
     private lateinit var scope: CoroutineScope
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
@@ -69,7 +72,10 @@ class MainActivity : ComponentActivity() {
                 scaffoldState = scaffoldState
             ) {
                 NavHost(navController = navHost, startDestination = "identification") {
-                    navigation(startDestination = "login?redirected={redirected}", route = "identification") {
+                    navigation(startDestination = "start", route = "identification") {
+                        composable("start") {
+                            StartScreen(navController = navHost, viewModel = startViewModel)
+                        }
                         composable(
                             "login?redirected={redirected}",
                             arguments = listOf(navArgument("redirected") {defaultValue = false; type = NavType.BoolType})

@@ -87,8 +87,4 @@ class RegisterViewModel: ViewModel() {
 
         })
     }
-
-    private fun effect(block: suspend () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) { block() }
-    }
 }
