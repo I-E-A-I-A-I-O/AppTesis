@@ -3,12 +3,12 @@ import logger from "./logger"
 import {NextFunction, Request, Response} from "express";
 
 export const generateToken = (ci: string): string => {
-    return jwt.sign(ci, process.env.JWT_SECRET, { expiresIn: 43200 })
+    return jwt.sign({ci}, process.env.JWT_SECRET, { expiresIn: '12h' })
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
     const header = req.headers["authorization"]
-    const token = header && header.split(' ')[1]
+    const token = header //&& header.split(' ')[1]
 
     if (token == null) return res.sendStatus(401)
 
@@ -18,7 +18,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             return res.status(403).json({message: "Sesion expirada."})
         }
 
-        req.user = payload as string
+        req.user = payload as {ci: string}
         next()
     })
 }

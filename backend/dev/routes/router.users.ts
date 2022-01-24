@@ -8,7 +8,7 @@ usersRouter.post('/', async (req: Request, res: Response) => {
 })
 
 usersRouter.get('/user/token', authenticateToken, async (req: Request, res: Response) => {
-    res.sendStatus(200)
+    res.status(200).json({message: ""})
 })
 
 usersRouter.post('/user', async (req: Request, res: Response) => {
