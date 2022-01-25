@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.justdance.apptesis.screens.home.HomeScreen
 import com.justdance.apptesis.screens.home.HomeViewModel
 import com.justdance.apptesis.screens.login.LoginScreen
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
 
+    @ExperimentalPermissionsApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @ExperimentalPermissionsApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
     @Composable
