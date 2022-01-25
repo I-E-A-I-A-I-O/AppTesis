@@ -1,5 +1,7 @@
 package com.justdance.apptesis
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,6 +42,7 @@ import com.justdance.apptesis.screens.register.RegisterScreen
 import com.justdance.apptesis.screens.register.RegisterViewModel
 import com.justdance.apptesis.screens.start.StartScreen
 import com.justdance.apptesis.screens.start.StartViewModel
+import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -59,6 +62,8 @@ class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val intent = Intent(this, LocationService::class.java)
+        startService(intent)
         setContent {
             TesisApp()
         }
