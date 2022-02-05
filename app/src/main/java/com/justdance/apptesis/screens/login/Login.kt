@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -79,7 +80,7 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel,
             Box(contentAlignment = Alignment.Center, modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 60.dp)) {
-                Text(text = "App Tesis", style = MaterialTheme.typography.h2)
+                Text(text = stringResource(id = R.string.app_name), style = MaterialTheme.typography.h2)
             }
             Spacer(modifier = Modifier.height(45.dp))
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
