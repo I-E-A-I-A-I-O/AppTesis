@@ -5,13 +5,21 @@ import android.app.Service
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.coroutines.coroutineContext
 
 class LocationService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -24,14 +32,14 @@ class LocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY
+        return /*START_STICKY*/ START_NOT_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        /*fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         createLocationRequest()
-        createLocationCallBack()
+        createLocationCallBack()*/
     }
 
     private fun createLocationRequest() {
@@ -92,11 +100,48 @@ class LocationService : Service() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                Toast.makeText(
-                    applicationContext,
-                    "${locationResult.locations.first().latitude} ${locationResult.locations.first().longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                var address: Address? = null
+
+                if (locationResult.locations.isEmpty())
+                    return
+
+                val location = locationResult.locations.first()
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    runCatching {
+                        val geoCode = Geocoder(applicationContext, Locale.getDefault())
+                        val addressList = geoCode.getFromLocation(location.latitude, location.longitude, 1)
+                        address = addressList.firstOrNull()
+                    }
+                }.invokeOnCompletion {
+                    if (address == null) {
+                        Log.d("Address calculation", "Address was null.")
+                        return@invokeOnCompletion
+                    }
+
+                    val sb = StringBuilder()
+                    for (i in 0 until address!!.maxAddressLineIndex) {
+                        sb.append(address!!.getAddressLine(i)).append(" ")
+                    }
+                    sb.append(address!!.locality).append(" ")
+                    sb.append(address!!.subLocality).append(" ")
+                    sb.append(address!!.thoroughfare).append(" ")
+                    sb.append(address!!.subThoroughfare).append(" ")
+                    sb.append(address!!.adminArea).append(" ")
+                    sb.append(address!!.subAdminArea).append(" ")
+                    sb.append(address!!.premises).append(" ")
+                    sb.append(address!!.featureName)
+                    sb.append(address!!.postalCode).append(" ")
+                    sb.append(address!!.countryName)
+                    val result = sb.toString()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(
+                            applicationContext,
+                            result,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
         }
     }
@@ -104,6 +149,6 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+        //fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 }
