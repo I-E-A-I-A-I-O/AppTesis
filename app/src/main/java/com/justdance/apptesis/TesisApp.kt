@@ -22,7 +22,6 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.justdance.apptesis.ui.screens.home.HomeScreen
-import com.justdance.apptesis.ui.screens.home.HomeViewModel
 import com.justdance.apptesis.ui.screens.login.LoginScreen
 import com.justdance.apptesis.ui.screens.login.LoginViewModel
 import com.justdance.apptesis.ui.screens.register.RegisterScreen
@@ -30,6 +29,7 @@ import com.justdance.apptesis.ui.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.screens.start.StartScreen
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
+import com.justdance.apptesis.ui.screens.home.HomeViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         object Home : Screen("home", R.string.home_screen_id, Icons.Filled.Home)
     }
 
-    val bottomNavRoutes = listOf(
+    private val bottomNavRoutes = listOf(
         Screen.Home
     )
 
@@ -101,13 +101,13 @@ class MainActivity : ComponentActivity() {
                                     loginViewModel.passChanged(registerViewModel.passText.value!!)
                                 }
                             }
-                            LoginScreen(navController = navHost, viewModel = loginViewModel) {
+                            LoginScreen(navHost, loginViewModel) {
                                     message, actionLabel, action: SnackActions ->
                                 onSnack(message, actionLabel, action)
                             }
                         }
                         composable("register") {
-                            RegisterScreen(navController = navHost, viewModel = registerViewModel) {
+                            RegisterScreen(navHost, registerViewModel) {
                                     message, actionLabel, action: SnackActions ->
                                 onSnack(message, actionLabel, action)
                             }
@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity() {
                     navigation("home", "homeNav") {
                         composable("home") {
                             it.destination.label = stringResource(id = R.string.home_screen_id)
-                            HomeScreen(navController = navHost, viewModel = homeViewModel)
+                            HomeScreen(navHost, homeViewModel)
                         }
                     }
                 }

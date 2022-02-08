@@ -15,4 +15,9 @@ class SessionRepository(private val sessionDao: SessionDao) {
     suspend fun deleteSession(session: Session) {
         sessionDao.delete(session)
     }
+
+    suspend fun getRole(): String {
+        val roles = sessionDao.getRoles()
+        return roles.first()
+    }
 }

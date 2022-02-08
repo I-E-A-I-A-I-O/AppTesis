@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.justdance.apptesis.ui.composables.CenteredLoading
 
 @ExperimentalPermissionsApi
 @Composable
@@ -52,7 +53,5 @@ fun StartScreen(navController: NavController, viewModel: StartViewModel) {
         viewModel.verifySession(onResponse)
     })
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
+    CenteredLoading()
 }
