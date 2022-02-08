@@ -9,8 +9,8 @@ class SemestersRepository(private val semestersDao: SemestersDao) {
         return semestersDao.getAll()
     }
 
-    suspend fun insertSemester(session: Semesters) {
-        semestersDao.insertAll(session)
+    suspend fun insertSemester(session: ArrayList<Semesters>) {
+        semestersDao.insertAll(*session.toTypedArray())
     }
 
     suspend fun deleteSemester(session: Semesters) {

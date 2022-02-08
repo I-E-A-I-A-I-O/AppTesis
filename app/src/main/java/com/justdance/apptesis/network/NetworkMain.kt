@@ -4,6 +4,7 @@ import com.justdance.apptesis.network.request.SessionVerify
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.GenericResponse
+import com.justdance.apptesis.network.response.GetSemestersResponse
 import com.justdance.apptesis.network.response.LoginResponse
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -27,6 +28,9 @@ interface Requests {
 
     @GET("users/user/token")
     fun session(@Header("authorization") token: String): Call<GenericResponse>
+
+    @GET("school/semesters")
+    fun getSemesters(): Call<GetSemestersResponse>
 }
 
 class Network {
