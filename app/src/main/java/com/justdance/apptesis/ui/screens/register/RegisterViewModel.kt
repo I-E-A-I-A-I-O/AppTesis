@@ -1,15 +1,12 @@
-package com.justdance.apptesis.screens.register
+package com.justdance.apptesis.ui.screens.register
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.justdance.apptesis.network.Network
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.GenericResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

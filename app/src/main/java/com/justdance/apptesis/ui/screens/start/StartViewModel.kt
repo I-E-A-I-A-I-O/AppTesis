@@ -1,11 +1,10 @@
-package com.justdance.apptesis.screens.start
+package com.justdance.apptesis.ui.screens.start
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.justdance.apptesis.network.Network
-import com.justdance.apptesis.network.request.SessionVerify
 import com.justdance.apptesis.network.response.GenericResponse
 import com.justdance.apptesis.room.AppDatabase
 import com.justdance.apptesis.room.entities.Session

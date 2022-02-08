@@ -1,4 +1,4 @@
-package com.justdance.apptesis.screens.home
+package com.justdance.apptesis.ui.screens.home
 
 import androidx.compose.material.Surface
 import androidx.compose.material.Text

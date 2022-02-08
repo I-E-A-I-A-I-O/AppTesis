@@ -5,4 +5,6 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="title_activity_identification">IdentificationActivity</string>
+    <string name="home_screen_id">Inicio</string>
+    <string name="period_screen_id">Semestres</string>
 </resources>

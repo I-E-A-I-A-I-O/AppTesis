@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.justdance.apptesis.room.dao.SessionDao
 import com.justdance.apptesis.room.entities.Session
 
-@Database(entities = [Session::class], version = 1, exportSchema = false)
+@Database(entities = [Session::class], version = 2, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun sessionDao(): SessionDao
 

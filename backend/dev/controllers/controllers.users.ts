@@ -17,7 +17,7 @@ export const insertUser = async (req: Request, res: Response) => {
             return res.status(400).json({message: "Correo o C.I ya se encuentran registrados."})
         }
         user.password = await bcrypt.hash(user.password, 10)
-        const result = await collections.users.insertOne(user)
+        const result = await collections.users.insertOne({...user, role: 'student'})
 
         if (result) {
             logger.info(`Successfully registered user with id ${result.insertedId}`)
@@ -55,6 +55,7 @@ export const userLogin = async (req: Request, res: Response) => {
         token: token,
         email: search.email,
         name: search.name,
-        ci: search.ci
+        ci: search.ci,
+        role: search.role
     })
 }
