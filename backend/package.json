@@ -4,8 +4,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "node dist/bin/www.js",
-    "prestart": "tsc"
+	  "build-ts": "tsc",
+    "postinstall": "npm run build-ts",
+    "start": "npm run serve",
+    "serve": "node dist/bin/www.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
