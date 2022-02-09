@@ -1,4 +1,4 @@
-package com.justdance.apptesis.screens.register
+package com.justdance.apptesis.ui.screens.register
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -92,7 +92,7 @@ fun RegisterScreen(navController: NavController, viewModel: RegisterViewModel,
                     painter = painterResource(id = R.drawable.ic_baseline_arrow_back_24),
                     contentDescription = "Atras")
             }
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             RegisterForm(
                 items = items,
                 email = email,

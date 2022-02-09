@@ -4,7 +4,6 @@ import com.justdance.apptesis.room.dao.SessionDao
 import com.justdance.apptesis.room.entities.Session
 
 class SessionRepository(private val sessionDao: SessionDao) {
-
     suspend fun getSession(): List<Session> {
         return sessionDao.getAll()
     }
@@ -15,5 +14,10 @@ class SessionRepository(private val sessionDao: SessionDao) {
 
     suspend fun deleteSession(session: Session) {
         sessionDao.delete(session)
+    }
+
+    suspend fun getRole(): String {
+        val roles = sessionDao.getRoles()
+        return roles.first()
     }
 }

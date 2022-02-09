@@ -1,23 +1,18 @@
-package com.justdance.apptesis.screens.start
+package com.justdance.apptesis.ui.screens.start
 
-import android.content.Intent
-import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionsRequired
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.location.Geofence
+import com.justdance.apptesis.ui.composables.CenteredLoading
 
 @ExperimentalPermissionsApi
 @Composable
@@ -58,7 +53,5 @@ fun StartScreen(navController: NavController, viewModel: StartViewModel) {
         viewModel.verifySession(onResponse)
     })
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
+    CenteredLoading()
 }

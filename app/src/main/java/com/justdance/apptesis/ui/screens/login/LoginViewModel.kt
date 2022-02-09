@@ -1,4 +1,4 @@
-package com.justdance.apptesis.screens.login
+package com.justdance.apptesis.ui.screens.login
 
 import android.app.Application
 import android.util.Log
@@ -58,7 +58,7 @@ class LoginViewModel(app: Application): AndroidViewModel(app) {
                                 if (result.isNotEmpty())
                                     sessionRepo.deleteSession(result.first())
 
-                                sessionRepo.insertSession(Session(0, loginResponse.token, loginResponse.name, loginResponse.email, loginResponse.ci))
+                                sessionRepo.insertSession(Session(0, loginResponse.token, loginResponse.name, loginResponse.email, loginResponse.ci, loginResponse.role))
                             }.invokeOnCompletion {
                                 _isLoading.value = false
                                 onResponse(loginResponse.message, true)

@@ -7,7 +7,7 @@ export default class User {
         public career: string,
         public password: string,
         public ci: String,
-        public userType: string = "student",
+        public role: string = "student",
         public id?: ObjectId
     ) {
     }

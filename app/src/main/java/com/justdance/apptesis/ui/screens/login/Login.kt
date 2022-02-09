@@ -1,4 +1,4 @@
-package com.justdance.apptesis.screens.login
+package com.justdance.apptesis.ui.screens.login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -25,7 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavOptions
 import com.justdance.apptesis.R
 import com.justdance.apptesis.SnackActions
 

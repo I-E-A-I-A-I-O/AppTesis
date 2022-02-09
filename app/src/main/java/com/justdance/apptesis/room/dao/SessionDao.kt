@@ -1,6 +1,5 @@
 package com.justdance.apptesis.room.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,6 +10,9 @@ import com.justdance.apptesis.room.entities.Session
 interface SessionDao {
     @Query("SELECT * FROM session")
     suspend fun getAll(): List<Session>
+
+    @Query("SELECT user_role FROM session")
+    suspend fun getRoles(): List<String>
 
     @Insert
     suspend fun insertAll(vararg session: Session)

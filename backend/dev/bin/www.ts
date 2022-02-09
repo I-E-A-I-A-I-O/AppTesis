@@ -7,6 +7,7 @@
 import {app} from "../app"
 import http from "http"
 import logger from "../utils/logger"
+import bcrypt from "bcrypt"
 import {connectToDatabase} from "../services/database.service";
 
 /**

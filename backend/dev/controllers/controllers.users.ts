@@ -1,11 +1,10 @@
 import {Request, Response} from "express"
-import { ObjectId } from "mongodb";
 import logger from "../utils/logger"
-import { collections } from "../services/database.service";
-import User from "../models/user";
+import { collections } from "../services/database.service"
+import User from "../models/user"
 import bcrypt from "bcrypt"
-import Login from "../models/login";
-import {generateToken} from "../utils/token.middleware";
+import Login from "../models/login"
+import {generateToken} from "../utils/token.middleware"
 
 export const insertUser = async (req: Request, res: Response) => {
     try {
@@ -17,7 +16,7 @@ export const insertUser = async (req: Request, res: Response) => {
             return res.status(400).json({message: "Correo o C.I ya se encuentran registrados."})
         }
         user.password = await bcrypt.hash(user.password, 10)
-        const result = await collections.users.insertOne(user)
+        const result = await collections.users.insertOne({...user, role: 'student'})
 
         if (result) {
             logger.info(`Successfully registered user with id ${result.insertedId}`)
@@ -28,7 +27,7 @@ export const insertUser = async (req: Request, res: Response) => {
         }
     } catch (e) {
         logger.error(e)
-        res.status(400).json({message: "Error registrando la cuenta."})
+        res.status(500).json({message: "Error registrando la cuenta."})
     }
 }
 
@@ -55,6 +54,7 @@ export const userLogin = async (req: Request, res: Response) => {
         token: token,
         email: search.email,
         name: search.name,
-        ci: search.ci
+        ci: search.ci,
+        role: search.role
     })
 }
