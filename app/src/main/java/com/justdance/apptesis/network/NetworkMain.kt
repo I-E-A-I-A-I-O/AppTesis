@@ -1,6 +1,5 @@
 package com.justdance.apptesis.network
 
-import com.justdance.apptesis.network.request.SessionVerify
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.GenericResponse
@@ -40,7 +39,7 @@ class Network {
         .retryOnConnectionFailure(false)
         .build()
     private var retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.0.190:8000/")
+        .baseUrl("https://beper.herokuapp.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()
