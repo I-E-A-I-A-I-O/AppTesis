@@ -6,9 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -18,8 +21,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.justdance.apptesis.ui.screens.home.HomeScreen
 import com.justdance.apptesis.ui.screens.login.LoginScreen
@@ -75,7 +82,7 @@ class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
     @Composable
     fun TesisApp() {
-        navHost = rememberNavController()
+        navHost = rememberAnimatedNavController()
         scaffoldState = rememberScaffoldState()
         scope = rememberCoroutineScope()
         val backStackEntry by navHost.currentBackStackEntryAsState()
@@ -85,9 +92,24 @@ class MainActivity : ComponentActivity() {
             Scaffold(
                 scaffoldState = scaffoldState,
                 bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
-                topBar = { if (TopBarRoute(currentDestination?.route)) TopAppBar(title = { Text(text = currentDestination?.label.toString())}) }
+                topBar = { if (TopBarRoute(currentDestination?.route)) AppBar(navHost) }
             ) {
-                NavHost(navController = navHost, startDestination = "identification") {
+                AnimatedNavHost(
+                    navController = navHost,
+                    startDestination = "identification",
+                    enterTransition = {
+                        slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
+                    },
+                    popEnterTransition = {
+                        slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                    },
+                    popExitTransition = {
+                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                    }
+                ) {
                     navigation(startDestination = "start", route = "identification") {
                         composable("start") {
                             StartScreen(navController = navHost, viewModel = startViewModel)
@@ -127,6 +149,25 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    @Composable
+    private fun AppBar(navController: NavHostController) {
+        TopAppBar(
+            title = { Text(text = navController.currentDestination?.label.toString())},
+            navigationIcon = if (navController.previousBackStackEntry != null) {
+                {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            } else {
+                null
+            }
+        )
     }
 
     @Composable
