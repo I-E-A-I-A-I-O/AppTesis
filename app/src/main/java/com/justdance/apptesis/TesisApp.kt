@@ -30,6 +30,7 @@ import com.justdance.apptesis.ui.screens.start.StartScreen
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
+import com.justdance.apptesis.ui.screens.semesters.SemesterScreen
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -117,6 +118,10 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             it.destination.label = stringResource(id = R.string.home_screen_id)
                             HomeScreen(navHost, homeViewModel)
+                        }
+                        composable("semester") {
+                            it.destination.label = stringResource(id = R.string.period_screen_id)
+                            SemesterScreen(navHost, homeViewModel)
                         }
                     }
                 }

@@ -32,8 +32,9 @@ fun Semesters(navController: NavController, viewModel: HomeViewModel) {
     Surface {
         LazyColumn(state = state) {
             items(semesters) { item ->
-                CardItem(title = item.name, info1 = "from: " + item.from, info2 = "to: " + item.to)
-                //CardItem(title = item.name, info1 = "from: " + item.from, info2 = "to: " + item.to)
+                CardItem(title = item.name, info1 = "from: " + item.from, info2 = "to: " + item.to) {
+                    navController.navigate("semester")
+                }
             }
             item {
                 Spacer(Modifier.height(60.dp))
