@@ -8,8 +8,8 @@ data class GetSemestersResponse(
 )
 
 data class Semester(
-    @SerializedName("id") val id: String,
+    @SerializedName("_id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("start") val start: String,
-    @SerializedName("end") val end: String
+    @SerializedName("from") val start: String,
+    @SerializedName("to") val end: String
 )

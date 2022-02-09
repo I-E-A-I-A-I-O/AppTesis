@@ -2,7 +2,12 @@ import * as mongoDB from "mongodb"
 import * as dotenv from "dotenv"
 import logger from "../utils/logger"
 
-export const collections: { users?: mongoDB.Collection } = {}
+export const collections: {
+     users?: mongoDB.Collection,
+     careers?: mongoDB.Collection,
+     courses?: mongoDB.Collection,
+     semesters?: mongoDB.Collection
+    } = {}
 
 export async function connectToDatabase() {
     dotenv.config()
@@ -12,4 +17,10 @@ export async function connectToDatabase() {
     logger.info(`Connected to database ${process.env.DB_NAME} successfully`)
     collections.users = db.collection(process.env.USERS_COLLECTION_NAME)
     logger.debug(`Connection to collection ${process.env.USERS_COLLECTION_NAME} successful`)
+    collections.careers = db.collection(process.env.CAREERS_COLLECTION_NAME)
+    logger.debug(`Connection to collection ${process.env.CAREERS_COLLECTION_NAME} successful`)
+    collections.courses = db.collection(process.env.COURSES_COLLECTION_NAME)
+    logger.debug(`Connection to collection ${process.env.COURSES_COLLECTION_NAME} successful`)
+    collections.semesters = db.collection(process.env.SEMESTERS_COLLECTION_NAME)
+    logger.debug(`Connection to collection ${process.env.SEMESTERS_COLLECTION_NAME} successful`)
 }

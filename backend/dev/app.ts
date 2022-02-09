@@ -7,6 +7,7 @@ import morganMiddleware from './utils/morgan.middleware'
 
 import {router as indexRouter} from "./routes/index"
 import {usersRouter} from "./routes/router.users"
+import {schoolRouter} from "./routes/router.school"
 
 export const app = express();
 
@@ -20,3 +21,4 @@ app.use(morganMiddleware)
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/school', schoolRouter);

@@ -1,11 +1,10 @@
 import {Request, Response} from "express"
-import { ObjectId } from "mongodb";
 import logger from "../utils/logger"
-import { collections } from "../services/database.service";
-import User from "../models/user";
+import { collections } from "../services/database.service"
+import User from "../models/user"
 import bcrypt from "bcrypt"
-import Login from "../models/login";
-import {generateToken} from "../utils/token.middleware";
+import Login from "../models/login"
+import {generateToken} from "../utils/token.middleware"
 
 export const insertUser = async (req: Request, res: Response) => {
     try {
@@ -28,7 +27,7 @@ export const insertUser = async (req: Request, res: Response) => {
         }
     } catch (e) {
         logger.error(e)
-        res.status(400).json({message: "Error registrando la cuenta."})
+        res.status(500).json({message: "Error registrando la cuenta."})
     }
 }
 

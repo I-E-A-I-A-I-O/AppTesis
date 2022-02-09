@@ -40,7 +40,9 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
     fun getRole() {
         CoroutineScope(Dispatchers.IO).launch {
             val role = sessionRepository.getRole()
-            _role.value = role
+            CoroutineScope(Dispatchers.Main).launch {
+                _role.value = role
+            }
         }
     }
 
