@@ -47,7 +47,7 @@ export const userLogin = async (req: Request, res: Response) => {
         return res.status(403).json({message: "Contraseña incorrecta."})
     }
 
-    const token = generateToken(login.ci)
+    const token = generateToken(login.ci, search.role)
     logger.info(`Login successful for ${login.ci}`)
     return res.status(201).json({
         message: "Inicio de sesion exitoso",
