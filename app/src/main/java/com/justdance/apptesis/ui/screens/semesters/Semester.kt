@@ -6,6 +6,6 @@ import androidx.navigation.NavController
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
 
 @Composable
-fun SemesterScreen(navController: NavController, viewModel: HomeViewModel) {
+fun SemesterScreen(navController: NavController, viewModel: HomeViewModel, id: String) {
     Text("AAAAAAAAAAAAAAAAAAAA")
 }

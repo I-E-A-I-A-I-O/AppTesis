@@ -101,13 +101,13 @@ class MainActivity : ComponentActivity() {
                         slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
                     },
                     exitTransition = {
-                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
+                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                     },
                     popEnterTransition = {
-                        slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                        slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
                     },
                     popExitTransition = {
-                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
                     }
                 ) {
                     navigation(startDestination = "start", route = "identification") {
@@ -116,7 +116,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(
                             "login?redirected={redirected}",
-                            arguments = listOf(navArgument("redirected") {defaultValue = false; type = NavType.BoolType})
+                            arguments = listOf(
+                                navArgument("redirected") {
+                                    defaultValue = false
+                                    type = NavType.BoolType
+                                }
+                            )
                         ) { backStackEntry ->
                             backStackEntry.arguments?.let {
                                 if (it.getBoolean("redirected")) {
@@ -141,7 +146,14 @@ class MainActivity : ComponentActivity() {
                             it.destination.label = stringResource(id = R.string.home_screen_id)
                             HomeScreen(navHost, homeViewModel)
                         }
-                        composable("semester") {
+                        composable(
+                        "semester?id={id}",
+                            arguments = listOf(
+                                navArgument("id") {
+                                    type = NavType.StringType
+                                }
+                            )
+                        ) {
                             it.destination.label = stringResource(id = R.string.period_screen_id)
                             SemesterScreen(navHost, homeViewModel)
                         }

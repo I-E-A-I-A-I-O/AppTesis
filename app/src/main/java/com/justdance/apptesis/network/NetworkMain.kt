@@ -3,6 +3,7 @@ package com.justdance.apptesis.network
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.GenericResponse
+import com.justdance.apptesis.network.response.GetSemesterCoursesResponse
 import com.justdance.apptesis.network.response.GetSemestersResponse
 import com.justdance.apptesis.network.response.LoginResponse
 import okhttp3.OkHttpClient
@@ -30,6 +31,9 @@ interface Requests {
 
     @GET("school/semesters")
     fun getSemesters(): Call<GetSemestersResponse>
+
+    @GET("school/semesters/{semester}/courses")
+    fun getSemesterCourses(@Path(value = "semester", encoded = true) semesterId: String, @Header("authorization") token: String): Call<GetSemesterCoursesResponse>
 }
 
 class Network {
