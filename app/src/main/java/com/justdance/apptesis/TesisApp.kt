@@ -153,9 +153,9 @@ class MainActivity : ComponentActivity() {
                                     type = NavType.StringType
                                 }
                             )
-                        ) {
-                            it.destination.label = stringResource(id = R.string.period_screen_id)
-                            SemesterScreen(navHost, homeViewModel)
+                        ) { backStackEntry ->
+                            backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
+                            SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
                         }
                     }
                 }

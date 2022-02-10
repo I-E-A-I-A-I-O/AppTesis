@@ -1,6 +1,7 @@
 package com.justdance.apptesis.ui.screens.home
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -41,6 +42,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
     }
 
     val semesters = semestersRepository.getSemesters()
+
     var courses = coursesRepository.getSemesterCourses("")
 
     private var _isLoading = MutableLiveData(false)
@@ -117,6 +119,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                     }
 
                     override fun onFailure(call: Call<GetSemesterCoursesResponse>, t: Throwable) {
+                        Log.e("HTTP Request", "GET courses error", t)
                         _isLoading.value = false
                     }
                 }

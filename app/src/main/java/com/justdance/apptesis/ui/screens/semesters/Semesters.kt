@@ -33,7 +33,7 @@ fun Semesters(navController: NavController, viewModel: HomeViewModel) {
         LazyColumn(state = state) {
             items(semesters) { item ->
                 CardItem(title = item.name, info1 = "from: " + item.from, info2 = "to: " + item.to) {
-                    navController.navigate("semester?id={".plus(item.id).plus("}"))
+                    navController.navigate("semester?id=${item.id}")
                 }
             }
             item {
