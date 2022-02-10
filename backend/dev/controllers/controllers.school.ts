@@ -2,7 +2,7 @@ import {Request, Response} from "express"
 import logger from "../utils/logger"
 import { collections } from "../services/database.service"
 import {Semester, SemesterCourse} from "../models/semesters"
-import User from "../models/user"
+import {User, UserShort} from "../models/user"
 import { ObjectId } from "mongodb"
 import Course from "../models/course"
 
@@ -37,12 +37,12 @@ export const getCourses = async (req: Request, res: Response) => {
 
         if (req.user.role === 'teacher') {
             results = sSearch.courses.filter((semester) => {
-                return semester.teacher === uSearch.id
+                return semester.teacher === uSearch._id
             })
         }
         else {
             results = sSearch.courses.filter((semester) => {
-                return semester.students.includes(uSearch.id)
+                return semester.students.includes(uSearch._id)
             })
         }
 
@@ -55,7 +55,7 @@ export const getCourses = async (req: Request, res: Response) => {
             return {
                 _id: c._id,
                 name: c.name,
-                teacher: (await collections.users.findOne({ _id: currentCourse.teacher }) as unknown as User).id,
+                teacher: await collections.users.findOne({ _id: currentCourse.teacher }) as unknown as UserShort,
                 group: currentCourse.group
             }
         })

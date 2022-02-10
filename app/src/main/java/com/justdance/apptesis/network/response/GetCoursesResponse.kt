@@ -10,5 +10,13 @@ data class GetSemesterCoursesResponse(
 data class SemesterCourse(
     @SerializedName("_id") val id: String,
     @SerializedName("name") val name: String,
-    @SerializedName("teacher") val teacherId: String
+    @SerializedName("teacher") val teacherId: User,
+    @SerializedName("group") val group: String
+)
+
+data class User(
+    @SerializedName("_id") val id: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("ci") val ci: String,
+    @SerializedName("name") val name: String
 )

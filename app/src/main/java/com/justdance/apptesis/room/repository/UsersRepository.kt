@@ -8,8 +8,16 @@ class UsersRepository(private val usersDao: UsersDao) {
         return usersDao.getAll()
     }
 
+    suspend fun isIdRegistered(id: String): Boolean {
+        return usersDao.getById(id) != null
+    }
+
     suspend fun insertUser(session: Users) {
         usersDao.insertAll(session)
+    }
+
+    suspend fun insertUser(session: ArrayList<Users>) {
+        usersDao.insertAll(*session.toTypedArray())
     }
 
     suspend fun deleteUser(session: Users) {

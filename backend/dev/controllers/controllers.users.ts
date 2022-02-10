@@ -1,7 +1,7 @@
 import {Request, Response} from "express"
 import logger from "../utils/logger"
 import { collections } from "../services/database.service"
-import User from "../models/user"
+import {User} from "../models/user"
 import bcrypt from "bcrypt"
 import Login from "../models/login"
 import {generateToken} from "../utils/token.middleware"
@@ -12,7 +12,7 @@ export const insertUser = async (req: Request, res: Response) => {
         const search = (await collections.users.findOne({ $or: [{email: user.email}, {ci: user.ci}] })) as unknown as User
 
         if (search) {
-            logger.info(`Account registration failed due to email already registered with id ${search.id}`)
+            logger.info(`Account registration failed due to email already registered with id ${search._id}`)
             return res.status(400).json({message: "Correo o C.I ya se encuentran registrados."})
         }
         user.password = await bcrypt.hash(user.password, 10)

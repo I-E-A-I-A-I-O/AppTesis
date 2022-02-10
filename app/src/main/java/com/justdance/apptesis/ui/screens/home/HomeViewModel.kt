@@ -10,9 +10,11 @@ import com.justdance.apptesis.network.response.GetSemestersResponse
 import com.justdance.apptesis.room.AppDatabase
 import com.justdance.apptesis.room.entities.Courses
 import com.justdance.apptesis.room.entities.Semesters
+import com.justdance.apptesis.room.entities.Users
 import com.justdance.apptesis.room.repository.CoursesRepository
 import com.justdance.apptesis.room.repository.SemestersRepository
 import com.justdance.apptesis.room.repository.SessionRepository
+import com.justdance.apptesis.room.repository.UsersRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,12 +26,15 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
     private val semestersRepository: SemestersRepository
     private val sessionRepository: SessionRepository
     private val coursesRepository: CoursesRepository
+    private val usersRepository: UsersRepository
 
     init {
         val database = AppDatabase.getInstance(app.applicationContext)
         val semestersDao = database.semestersDao()
         val sessionDao = database.sessionDao()
         val coursesDao = database.coursesDao()
+        val usersDao = database.usersDao()
+        usersRepository = UsersRepository(usersDao)
         coursesRepository = CoursesRepository(coursesDao)
         sessionRepository = SessionRepository(sessionDao)
         semestersRepository = SemestersRepository(semestersDao)
@@ -63,29 +68,46 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                             return
                         }
 
-                        response.body()?.let { body ->
-                            val toDB = arrayListOf<Courses>()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            response.body()?.let { body ->
+                                val toDB = arrayListOf<Courses>()
+                                val toUsers = arrayListOf<Users>()
 
-                            body.courses.forEach { Course ->
-                                val c = courses.value?.find {
-                                    it.id == Course.id
-                                }
-
-                                if (c == null) {
-                                    toDB.add(
-                                        Courses(
-                                            Course.id,
-                                            Course.name,
-                                            id,
-                                            Course.teacherId,
-                                            listOf()
+                                body.courses.forEach { Course ->
+                                    if (!usersRepository.isIdRegistered(Course.teacherId.id)) {
+                                        toUsers.add(
+                                            Users(
+                                                Course.teacherId.id,
+                                                Course.teacherId.name,
+                                                Course.teacherId.ci,
+                                                Course.teacherId.email
+                                            )
                                         )
-                                    )
-                                }
-                            }
+                                    }
 
-                            if (toDB.isNotEmpty()) {
-                                CoroutineScope(Dispatchers.IO).launch {
+                                    val c = courses.value?.find {
+                                        it.id == Course.id
+                                    }
+
+                                    if (c == null) {
+                                        toDB.add(
+                                            Courses(
+                                                Course.id,
+                                                Course.name,
+                                                id,
+                                                Course.group,
+                                                Course.teacherId.id,
+                                                listOf()
+                                            )
+                                        )
+                                    }
+                                }
+
+                                if (toUsers.isNotEmpty()) {
+                                    usersRepository.insertUser(toUsers)
+                                }
+
+                                if (toDB.isNotEmpty()) {
                                     coursesRepository.insertCourse(toDB)
                                 }
                             }

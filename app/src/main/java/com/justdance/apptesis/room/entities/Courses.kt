@@ -16,6 +16,7 @@ data class Courses(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "course_name") val name: String,
     @ColumnInfo(name = "semester") val semester: String,
+    @ColumnInfo(name = "group") val group: String,
     @ColumnInfo(name = "teacher") val teacher: String,
     @ColumnInfo(name = "students") val students: List<String>
 )

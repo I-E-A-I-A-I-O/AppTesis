@@ -11,6 +11,9 @@ interface UsersDao {
     @Query("SELECT * FROM users")
     suspend fun getAll(): List<Users>
 
+    @Query("SELECT * FROM users WHERE id=:userId")
+    suspend fun getById(userId: String): Users?
+
     @Insert
     suspend fun insertAll(vararg users: Users)
 
