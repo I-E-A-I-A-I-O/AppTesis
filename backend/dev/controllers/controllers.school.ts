@@ -57,7 +57,7 @@ export const getCourses = async (req: Request, res: Response) => {
         const cSearchArr = await cSearch.toArray() as Course[]
         logger.warn(`GET for courses with IDs ${JSON.stringify(courseIds)}. Result: ${JSON.stringify(cSearchArr)}`)
         const coursesPromise = cSearchArr.map(async (c) => {
-            const currentCourse = results[results.findIndex((v) => {v.course === c._id})]
+            const currentCourse = results[results.findIndex((v) => {JSON.stringify(v.course) === JSON.stringify(c._id)})]
             return {
                 _id: c._id,
                 name: c.name,
