@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                 },
                 popEnterTransition = {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                 },
                 popExitTransition = {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))

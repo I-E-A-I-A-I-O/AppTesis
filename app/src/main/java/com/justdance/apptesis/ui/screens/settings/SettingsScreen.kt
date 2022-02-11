@@ -10,9 +10,18 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScreen(navController: NavController, viewModel: SettingsViewModel) {
+    val onLogout = {
+        viewModel.clearDatabase()
+        navController.navigate("identification") {
+            popUpTo("settings") {
+                inclusive = true
+            }
+        }
+    }
+
     Surface {
         Column {
-            ListItem(Modifier.clickable {  }) {
+            ListItem(Modifier.clickable { onLogout() }) {
                 Text("Cerrar sesion")
             }
             Divider()
