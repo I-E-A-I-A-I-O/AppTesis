@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -28,6 +29,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.justdance.apptesis.ui.screens.home.HomeScreen
 import com.justdance.apptesis.ui.screens.login.LoginScreen
 import com.justdance.apptesis.ui.screens.login.LoginViewModel
@@ -73,7 +75,9 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, LocationService::class.java)
         startService(intent)
         setContent {
-            TesisApp()
+            AppTesisTheme {
+                TesisApp()
+            }
         }
     }
 
@@ -87,76 +91,88 @@ class MainActivity : ComponentActivity() {
         scope = rememberCoroutineScope()
         val backStackEntry by navHost.currentBackStackEntryAsState()
         val currentDestination = backStackEntry?.destination
+        val systemUiController = rememberSystemUiController()
+        val useDarkIcons = MaterialTheme.colors.isLight
+        val prim = if(useDarkIcons) MaterialTheme.colors.primary else MaterialTheme.colors.onPrimary
 
-        AppTesisTheme {
-            Scaffold(
-                scaffoldState = scaffoldState,
-                bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
-                topBar = { if (TopBarRoute(currentDestination?.route)) AppBar(navHost) }
+        SideEffect {
+            systemUiController.setNavigationBarColor(
+                color = Color.Transparent,
+                darkIcons = useDarkIcons
+            )
+            systemUiController.setStatusBarColor(
+                color = prim,
+                darkIcons = useDarkIcons
+            )
+        }
+
+        Scaffold(
+            scaffoldState = scaffoldState,
+            bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
+            topBar = { if (TopBarRoute(currentDestination?.route)) AppBar(navHost) }
+        ) {
+            AnimatedNavHost(
+                navController = navHost,
+                startDestination = "identification",
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
+                }
             ) {
-                AnimatedNavHost(
-                    navController = navHost,
-                    startDestination = "identification",
-                    enterTransition = {
-                        slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
-                    },
-                    exitTransition = {
-                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
-                    },
-                    popEnterTransition = {
-                        slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
-                    },
-                    popExitTransition = {
-                        slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
+                navigation(startDestination = "start", route = "identification") {
+                    composable("start") {
+                        StartScreen(navController = navHost, viewModel = startViewModel)
                     }
-                ) {
-                    navigation(startDestination = "start", route = "identification") {
-                        composable("start") {
-                            StartScreen(navController = navHost, viewModel = startViewModel)
-                        }
-                        composable(
-                            "login?redirected={redirected}",
-                            arguments = listOf(
-                                navArgument("redirected") {
-                                    defaultValue = false
-                                    type = NavType.BoolType
-                                }
-                            )
-                        ) { backStackEntry ->
-                            backStackEntry.arguments?.let {
-                                if (it.getBoolean("redirected")) {
-                                    loginViewModel.ciChanged(registerViewModel.ciText.value!!)
-                                    loginViewModel.passChanged(registerViewModel.passText.value!!)
-                                }
+                    composable(
+                        "login?redirected={redirected}",
+                        arguments = listOf(
+                            navArgument("redirected") {
+                                defaultValue = false
+                                type = NavType.BoolType
                             }
-                            LoginScreen(navHost, loginViewModel) {
-                                    message, actionLabel, action: SnackActions ->
-                                onSnack(message, actionLabel, action)
+                        )
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.let {
+                            if (it.getBoolean("redirected")) {
+                                loginViewModel.ciChanged(registerViewModel.ciText.value!!)
+                                loginViewModel.passChanged(registerViewModel.passText.value!!)
                             }
                         }
-                        composable("register") {
-                            RegisterScreen(navHost, registerViewModel) {
-                                    message, actionLabel, action: SnackActions ->
-                                onSnack(message, actionLabel, action)
-                            }
+                        LoginScreen(navHost, loginViewModel) {
+                                message, actionLabel, action: SnackActions ->
+                            onSnack(message, actionLabel, action)
                         }
                     }
-                    navigation("home", "homeNav") {
-                        composable("home") {
-                            it.destination.label = stringResource(id = R.string.home_screen_id)
-                            HomeScreen(navHost, homeViewModel)
+                    composable("register") {
+                        RegisterScreen(navHost, registerViewModel) {
+                                message, actionLabel, action: SnackActions ->
+                            onSnack(message, actionLabel, action)
                         }
-                        composable(
+                    }
+                }
+                navigation("home", "homeNav") {
+                    composable("home") {
+                        it.destination.label = stringResource(id = R.string.home_screen_id)
+                        HomeScreen(navHost, homeViewModel)
+                    }
+                    composable(
                         "semester?id={id}",
-                            arguments = listOf(
-                                navArgument("id") {
-                                    type = NavType.StringType
-                                }
-                            )
-                        ) { backStackEntry ->
-                            backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
-                            SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
-                        }
+                        arguments = listOf(
+                            navArgument("id") {
+                                type = NavType.StringType
+                            }
+                        )
+                    ) { backStackEntry ->
+                        backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
+                        SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
                     }
                 }
             }

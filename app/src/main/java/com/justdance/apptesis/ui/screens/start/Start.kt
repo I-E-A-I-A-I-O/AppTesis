@@ -1,13 +1,8 @@
 package com.justdance.apptesis.ui.screens.start
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -47,7 +42,7 @@ fun StartScreen(navController: NavController, viewModel: StartViewModel) {
     }
 
     LaunchedEffect(key1 = Unit, block = {
-        if (locationPermissions.shouldShowRationale && !locationPermissions.permissionRequested) {
+        if (locationPermissions.shouldShowRationale) {
             locationPermissions.launchMultiplePermissionRequest()
         }
         viewModel.verifySession(onResponse)
