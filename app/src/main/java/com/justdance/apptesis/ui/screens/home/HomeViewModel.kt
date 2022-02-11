@@ -43,7 +43,8 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
     val semesters = semestersRepository.getSemesters()
 
-    var courses = coursesRepository.getSemesterCourses("")
+    private var _courses = MutableLiveData(listOf<Courses>())
+    val courses: LiveData<List<Courses>> = _courses
 
     private var _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -54,9 +55,16 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
     fun getCourses(id: String) {
         _isLoading.value = true
-        courses = coursesRepository.getSemesterCourses(id)
 
         CoroutineScope(Dispatchers.IO).launch {
+            val savedCourses = coursesRepository.getSemesterCourses(id)
+            Log.d("COURSES", "ID $id")
+            Log.d("COURSES", "${savedCourses.count()}")
+
+            CoroutineScope(Dispatchers.Main).launch {
+                _courses.value = savedCourses
+            }
+
             val token = sessionRepository.getToken()
             val network = Network()
             network.service.getSemesterCourses(id, token).enqueue(
@@ -74,6 +82,8 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                             response.body()?.let { body ->
                                 val toDB = arrayListOf<Courses>()
                                 val toUsers = arrayListOf<Users>()
+                                Log.d("COURSES REPONSE", "COUNT ${body.courses.count()}")
+                                Log.d("COURSES REPONSE", "MESSAGE ${body.message}")
 
                                 body.courses.forEach { Course ->
                                     if (!usersRepository.isIdRegistered(Course.teacherId.id)) {
@@ -87,7 +97,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                         )
                                     }
 
-                                    val c = courses.value?.find {
+                                    val c = savedCourses.find {
                                         it.id == Course.id
                                     }
 

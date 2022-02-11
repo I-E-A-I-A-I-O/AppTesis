@@ -13,7 +13,7 @@ interface CoursesDao {
     suspend fun getAll(): List<Courses>
 
     @Query("SELECT * FROM courses WHERE semester=:semesterId")
-    fun getFromSemester(semesterId: String): LiveData<List<Courses>>
+    suspend fun getFromSemester(semesterId: String): List<Courses>
 
     @Query("UPDATE courses SET students=:students WHERE id=:courseId")
     suspend fun updateStudents(courseId: String, students: List<String>)

@@ -5,7 +5,7 @@ import com.justdance.apptesis.room.dao.CoursesDao
 import com.justdance.apptesis.room.entities.Courses
 
 class CoursesRepository(private val coursesDao: CoursesDao) {
-    fun getSemesterCourses(semesterId: String): LiveData<List<Courses>> {
+    suspend fun getSemesterCourses(semesterId: String): List<Courses> {
         return coursesDao.getFromSemester(semesterId)
     }
 
