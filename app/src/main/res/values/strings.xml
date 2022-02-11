@@ -6,6 +6,8 @@
     <string name="password">Password</string>
     <string name="title_activity_identification">IdentificationActivity</string>
     <string name="home_screen_id">Inicio</string>
+    <string name="settings_screen_id">Configuracion</string>
+    <string name="notifications_screen_id">Notificaciones</string>
     <string name="periods_screen_id">Semestres</string>
     <string name="period_screen_id">Semestre</string>
 </resources>
