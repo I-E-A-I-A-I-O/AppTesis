@@ -5,21 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -38,8 +32,13 @@ import com.justdance.apptesis.ui.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.screens.start.StartScreen
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
+import com.justdance.apptesis.ui.composables.BottomNav
+import com.justdance.apptesis.ui.composables.MyAppBar
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
+import com.justdance.apptesis.ui.screens.notifications.NotificationsScreen
 import com.justdance.apptesis.ui.screens.semesters.SemesterScreen
+import com.justdance.apptesis.ui.screens.settings.SettingsScreen
+import com.justdance.apptesis.ui.screens.settings.SettingsViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,17 +54,11 @@ class MainActivity : ComponentActivity() {
     private val registerViewModel by viewModels<RegisterViewModel>()
     private val startViewModel by viewModels<StartViewModel>()
     private val homeViewModel by viewModels<HomeViewModel>()
+    private val settingsViewModel by viewModels<SettingsViewModel>()
     private lateinit var scope: CoroutineScope
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
 
-    sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
-        object Home : Screen("home", R.string.home_screen_id, Icons.Filled.Home)
-    }
-
-    private val bottomNavRoutes = listOf(
-        Screen.Home
-    )
 
     @ExperimentalPermissionsApi
     @ExperimentalComposeUiApi
@@ -108,8 +101,12 @@ class MainActivity : ComponentActivity() {
 
         Scaffold(
             scaffoldState = scaffoldState,
-            bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
-            topBar = { if (TopBarRoute(currentDestination?.route)) AppBar(navHost) }
+            bottomBar = {
+                AnimatedVisibility(visible = bottomNavRoute(currentDestination?.route)) {
+                    BottomNav(navController = navHost)
+                }
+            },
+            topBar = { if (topBarRoute(currentDestination?.route)) MyAppBar(navHost) }
         ) {
             AnimatedNavHost(
                 navController = navHost,
@@ -121,7 +118,7 @@ class MainActivity : ComponentActivity() {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                 },
                 popEnterTransition = {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                 },
                 popExitTransition = {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
@@ -175,48 +172,18 @@ class MainActivity : ComponentActivity() {
                         SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
                     }
                 }
-            }
-        }
-    }
-
-    @Composable
-    private fun AppBar(navController: NavHostController) {
-        TopAppBar(
-            title = { Text(text = navController.currentDestination?.label.toString())},
-            navigationIcon = if (navController.previousBackStackEntry != null) {
-                {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                navigation("settings", "settingsNav") {
+                    composable("settings") {
+                        it.destination.label = stringResource(id = R.string.settings_screen_id)
+                        SettingsScreen(navController = navHost, viewModel = settingsViewModel)
                     }
                 }
-            } else {
-                null
-            }
-        )
-    }
-
-    @Composable
-    private fun BottomNav(navController: NavHostController) {
-        BottomNavigation {
-            val backStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = backStackEntry?.destination
-            bottomNavRoutes.forEach { screen ->
-                BottomNavigationItem(
-                    icon = { Icon(screen.icon, contentDescription = null) },
-                    label = { Text(stringResource(screen.resourceId)) },
-                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                    onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    })
+                navigation("notifications", "notificationsNav") {
+                    composable("notifications") {
+                        it.destination.label = stringResource(id = R.string.notifications_screen_id)
+                        NotificationsScreen(navController = navHost)
+                    }
+                }
             }
         }
     }
@@ -238,7 +205,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun TopBarRoute(route: String?): Boolean {
+    private fun topBarRoute(route: String?): Boolean {
         return when (route) {
             null -> false
             "start" -> false
@@ -248,13 +215,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun BottomNavRoute(route: String?): Boolean {
+    private fun bottomNavRoute(route: String?): Boolean {
         return when (route) {
             null -> false
-            "start" -> false
-            "login?redirected={redirected}" -> false
-            "register" -> false
-            else -> true
+            "settings" -> true
+            "home" -> true
+            "notifications" -> true
+            else -> false
         }
     }
 }

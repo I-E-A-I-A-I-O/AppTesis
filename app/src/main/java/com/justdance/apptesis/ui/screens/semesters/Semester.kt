@@ -29,7 +29,7 @@ fun SemesterScreen(navController: NavController, viewModel: HomeViewModel, id: S
         }
     })
 
-    if (!id.isNullOrEmpty()) {
+    if (id.isNullOrEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No hay materias para este semestre.", style = MaterialTheme.typography.h6)
         }
