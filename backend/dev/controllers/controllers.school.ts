@@ -56,23 +56,24 @@ export const getCourses = async (req: Request, res: Response) => {
         const cSearch = collections.courses.find({_id: {$in: [...courseIds]}})
         const cSearchArr = await cSearch.toArray() as Course[]
         logger.warn(`GET for courses with IDs ${JSON.stringify(courseIds)}. Result: ${JSON.stringify(cSearchArr)}`)
-        const coursesPromise = cSearchArr.map(async (c) => {
-            const index = results.findIndex((v) => {
-                return JSON.stringify(v.course) === JSON.stringify(c._id)
+        const coursesPromise = results.map(async (c) => {
+            const index = cSearchArr.findIndex((v) => {
+                return JSON.stringify(v._id) === JSON.stringify(c.course)
             })
 
             if (index !== -1) {
-                const currentCourse = results[index]
+                const currentCourse = cSearchArr[index]
                 return {
-                    _id: c._id,
-                    name: c.name,
-                    teacher: await collections.users.findOne({ _id: currentCourse.teacher }) as unknown as UserShort,
-                    group: currentCourse.group
+                    _id: c.course,
+                    name: currentCourse.name,
+                    teacher: await collections.users.findOne({ _id: c.teacher }) as unknown as UserShort,
+                    group: c.group
                 }
             }
         })
 
         const courses = await Promise.all(coursesPromise)
+        logger.warn(`All courses filtered for user ${uSearch._id}. Results: ${JSON.stringify(courses)}`)
 
         res.status(200).json({
             message: 'OK',

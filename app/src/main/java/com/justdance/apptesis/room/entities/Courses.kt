@@ -7,13 +7,9 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.PrimaryKey
 
-@Entity(foreignKeys = [
-    ForeignKey(entity = Semesters::class, parentColumns = arrayOf("id"), childColumns = arrayOf("semester"), onDelete = NO_ACTION, onUpdate = CASCADE),
-    ForeignKey(entity = Users::class, parentColumns = arrayOf("id"), childColumns = arrayOf("teacher"), onDelete = NO_ACTION, onUpdate = CASCADE),
-    ForeignKey(entity = Users::class, parentColumns = arrayOf("id"), childColumns = arrayOf("students"), onDelete = NO_ACTION, onUpdate = CASCADE)
-])
+@Entity(primaryKeys = ["id", "semester", "group"])
 data class Courses(
-    @PrimaryKey val id: String,
+    @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "course_name") val name: String,
     @ColumnInfo(name = "semester") val semester: String,
     @ColumnInfo(name = "group") val group: String,

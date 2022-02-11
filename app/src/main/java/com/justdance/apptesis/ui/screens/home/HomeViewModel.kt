@@ -98,7 +98,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                     }
 
                                     val c = savedCourses.find {
-                                        it.id == Course.id
+                                        it.id == Course.id && it.semester == id && it.group == Course.group
                                     }
 
                                     if (c == null) {
