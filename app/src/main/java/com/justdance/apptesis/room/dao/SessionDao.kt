@@ -14,6 +14,9 @@ interface SessionDao {
     @Query("SELECT user_role FROM session")
     suspend fun getRoles(): List<String>
 
+    @Query("SELECT token FROM session")
+    suspend fun getTokens(): List<String>
+
     @Insert
     suspend fun insertAll(vararg session: Session)
 

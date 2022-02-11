@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken"
 import logger from "./logger"
 import {NextFunction, Request, Response} from "express";
 
-export const generateToken = (ci: string): string => {
-    return jwt.sign({ci}, process.env.JWT_SECRET, { expiresIn: '12h' })
+export const generateToken = (ci: string, role: string): string => {
+    return jwt.sign({ci, role}, process.env.JWT_SECRET, { expiresIn: '12h' })
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +18,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
             return res.status(403).json({message: "Sesion expirada."})
         }
 
-        req.user = payload as {ci: string}
+        req.user = payload as {ci: string, role: string}
         next()
     })
 }

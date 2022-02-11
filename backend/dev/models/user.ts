@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb"
 
-export default class User {
+export class User {
     constructor(
         public name: string,
         public email: string,
@@ -8,7 +8,17 @@ export default class User {
         public password: string,
         public ci: String,
         public role: string = "student",
-        public id?: ObjectId
+        public _id?: ObjectId
+    ) {
+    }
+}
+
+export class UserShort {
+    constructor(
+        public name: string,
+        public ci: String,
+        public email: string,
+        public _id?: ObjectId
     ) {
     }
 }

@@ -1,15 +1,20 @@
 import {ObjectId} from "mongodb"
 
-export default class Semester {
+export class Semester {
     constructor(
         public name: String,
         public from: String,
         public to: String,
-        public courses: {
-            teacher: ObjectId,
-            course: ObjectId,
-            students: []
-        },
+        public courses: SemesterCourse[],
         public _id?: ObjectId
+    ) {}
+}
+
+export class SemesterCourse {
+    constructor(
+        public teacher: ObjectId,
+        public course: ObjectId,
+        public group: string,
+        public students: ObjectId[]
     ) {}
 }

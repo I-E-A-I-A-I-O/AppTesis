@@ -20,4 +20,9 @@ class SessionRepository(private val sessionDao: SessionDao) {
         val roles = sessionDao.getRoles()
         return roles.first()
     }
+
+    suspend fun getToken(): String {
+        val tokens = sessionDao.getTokens()
+        return tokens.first()
+    }
 }

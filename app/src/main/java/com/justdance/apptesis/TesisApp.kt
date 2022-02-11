@@ -6,21 +6,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.*
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.navigation
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.justdance.apptesis.ui.screens.home.HomeScreen
 import com.justdance.apptesis.ui.screens.login.LoginScreen
 import com.justdance.apptesis.ui.screens.login.LoginViewModel
@@ -30,6 +39,7 @@ import com.justdance.apptesis.ui.screens.start.StartScreen
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
+import com.justdance.apptesis.ui.screens.semesters.SemesterScreen
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -65,7 +75,9 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, LocationService::class.java)
         startService(intent)
         setContent {
-            TesisApp()
+            AppTesisTheme {
+                TesisApp()
+            }
         }
     }
 
@@ -74,54 +86,116 @@ class MainActivity : ComponentActivity() {
     @ExperimentalAnimationApi
     @Composable
     fun TesisApp() {
-        navHost = rememberNavController()
+        navHost = rememberAnimatedNavController()
         scaffoldState = rememberScaffoldState()
         scope = rememberCoroutineScope()
         val backStackEntry by navHost.currentBackStackEntryAsState()
         val currentDestination = backStackEntry?.destination
+        val systemUiController = rememberSystemUiController()
+        val useDarkIcons = MaterialTheme.colors.isLight
+        val prim = if(useDarkIcons) MaterialTheme.colors.primary else MaterialTheme.colors.onPrimary
 
-        AppTesisTheme {
-            Scaffold(
-                scaffoldState = scaffoldState,
-                bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
-                topBar = { if (TopBarRoute(currentDestination?.route)) TopAppBar(title = { Text(text = currentDestination?.label.toString())}) }
+        SideEffect {
+            systemUiController.setNavigationBarColor(
+                color = Color.Transparent,
+                darkIcons = useDarkIcons
+            )
+            systemUiController.setStatusBarColor(
+                color = prim,
+                darkIcons = useDarkIcons
+            )
+        }
+
+        Scaffold(
+            scaffoldState = scaffoldState,
+            bottomBar = { if (BottomNavRoute(currentDestination?.route)) BottomNav(navHost) },
+            topBar = { if (TopBarRoute(currentDestination?.route)) AppBar(navHost) }
+        ) {
+            AnimatedNavHost(
+                navController = navHost,
+                startDestination = "identification",
+                enterTransition = {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Left, animationSpec = tween(700))
+                },
+                exitTransition = {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(AnimatedContentScope.SlideDirection.Up, animationSpec = tween(700))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
+                }
             ) {
-                NavHost(navController = navHost, startDestination = "identification") {
-                    navigation(startDestination = "start", route = "identification") {
-                        composable("start") {
-                            StartScreen(navController = navHost, viewModel = startViewModel)
+                navigation(startDestination = "start", route = "identification") {
+                    composable("start") {
+                        StartScreen(navController = navHost, viewModel = startViewModel)
+                    }
+                    composable(
+                        "login?redirected={redirected}",
+                        arguments = listOf(
+                            navArgument("redirected") {
+                                defaultValue = false
+                                type = NavType.BoolType
+                            }
+                        )
+                    ) { backStackEntry ->
+                        backStackEntry.arguments?.let {
+                            if (it.getBoolean("redirected")) {
+                                loginViewModel.ciChanged(registerViewModel.ciText.value!!)
+                                loginViewModel.passChanged(registerViewModel.passText.value!!)
+                            }
                         }
-                        composable(
-                            "login?redirected={redirected}",
-                            arguments = listOf(navArgument("redirected") {defaultValue = false; type = NavType.BoolType})
-                        ) { backStackEntry ->
-                            backStackEntry.arguments?.let {
-                                if (it.getBoolean("redirected")) {
-                                    loginViewModel.ciChanged(registerViewModel.ciText.value!!)
-                                    loginViewModel.passChanged(registerViewModel.passText.value!!)
-                                }
-                            }
-                            LoginScreen(navHost, loginViewModel) {
-                                    message, actionLabel, action: SnackActions ->
-                                onSnack(message, actionLabel, action)
-                            }
-                        }
-                        composable("register") {
-                            RegisterScreen(navHost, registerViewModel) {
-                                    message, actionLabel, action: SnackActions ->
-                                onSnack(message, actionLabel, action)
-                            }
+                        LoginScreen(navHost, loginViewModel) {
+                                message, actionLabel, action: SnackActions ->
+                            onSnack(message, actionLabel, action)
                         }
                     }
-                    navigation("home", "homeNav") {
-                        composable("home") {
-                            it.destination.label = stringResource(id = R.string.home_screen_id)
-                            HomeScreen(navHost, homeViewModel)
+                    composable("register") {
+                        RegisterScreen(navHost, registerViewModel) {
+                                message, actionLabel, action: SnackActions ->
+                            onSnack(message, actionLabel, action)
                         }
+                    }
+                }
+                navigation("home", "homeNav") {
+                    composable("home") {
+                        it.destination.label = stringResource(id = R.string.home_screen_id)
+                        HomeScreen(navHost, homeViewModel)
+                    }
+                    composable(
+                        "semester?id={id}",
+                        arguments = listOf(
+                            navArgument("id") {
+                                type = NavType.StringType
+                            }
+                        )
+                    ) { backStackEntry ->
+                        backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
+                        SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun AppBar(navController: NavHostController) {
+        TopAppBar(
+            title = { Text(text = navController.currentDestination?.label.toString())},
+            navigationIcon = if (navController.previousBackStackEntry != null) {
+                {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            } else {
+                null
+            }
+        )
     }
 
     @Composable
