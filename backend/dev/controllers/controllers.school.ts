@@ -39,8 +39,9 @@ export const getCourses = async (req: Request, res: Response) => {
 
         if (req.user.role === 'teacher') {
             results = sSearch.courses.filter((semester) => {
-                return semester.teacher == uSearch._id
+                return JSON.stringify(semester.teacher) === JSON.stringify(uSearch._id)
             })
+            
             logger.warn(`Filtered courses for teacher ${uSearch._id} in semester ${sSearch._id}. Results: ${JSON.stringify(results)}`)
         }
         else {
