@@ -22,15 +22,15 @@ export const getCourses = async (req: Request, res: Response) => {
         const uSearch = await collections.users.findOne({ ci: req.user.ci }) as unknown as User
         
         if (!uSearch) {
-            logger.info('failed courses GET due to CI not found')
+            logger.warn('failed courses GET due to CI not found')
             return res.status(404).json({message: "C.I no encontrada."})
         }
 
-        logger.info(`GET semester started for ${req.params.semester}`)
+        logger.warn(`GET semester started for ${req.params.semester}`)
         const sSearch = await collections.semesters.findOne({_id: new ObjectId(req.params.semester)}) as Semester
 
         if (!sSearch) {
-            logger.info('failed courses GET due to semester not found')
+            logger.warn('failed courses GET due to semester not found')
             return res.status(404).json({message: "Semestre no existe."})
         }
 
@@ -40,7 +40,7 @@ export const getCourses = async (req: Request, res: Response) => {
             results = sSearch.courses.filter((semester) => {
                 return semester.teacher === uSearch._id
             })
-            logger.info(`Filtered courses for teacher ${req.user.ci} in semester ${sSearch._id}. Results: ${JSON.stringify(results)}`)
+            logger.warn(`Filtered courses for teacher ${req.user.ci} in semester ${sSearch._id}. Results: ${JSON.stringify(results)}`)
         }
         else {
             results = sSearch.courses.filter((semester) => {
@@ -50,10 +50,10 @@ export const getCourses = async (req: Request, res: Response) => {
 
         
         const courseIds = results.map((val) => { return val.course })
-        logger.info(`Filtered courses IDs. Result: ${JSON.stringify(courseIds)}`)
+        logger.warn(`Filtered courses IDs. Result: ${JSON.stringify(courseIds)}`)
         const cSearch = collections.courses.find({_id: {$in: [...courseIds]}})
         const cSearchArr = await cSearch.toArray() as Course[]
-        logger.info(`GET for courses with IDs ${JSON.stringify(courseIds)}. Result: ${JSON.stringify(cSearchArr)}`)
+        logger.warn(`GET for courses with IDs ${JSON.stringify(courseIds)}. Result: ${JSON.stringify(cSearchArr)}`)
         const coursesPromise = cSearchArr.map(async (c) => {
             const currentCourse = results[results.findIndex((v) => {v.course === c._id})]
             return {
