@@ -28,6 +28,7 @@ export const getCourses = async (req: Request, res: Response) => {
 
         logger.warn(`GET semester started for ${req.params.semester}`)
         const sSearch = await collections.semesters.findOne({_id: new ObjectId(req.params.semester)}) as Semester
+        logger.warn(`SEMESTER RETRIEVED. ALL COURSES: ${JSON.stringify(sSearch.courses)}`)
 
         if (!sSearch) {
             logger.warn('failed courses GET due to semester not found')
