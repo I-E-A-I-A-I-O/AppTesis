@@ -41,7 +41,7 @@ export const getSemesters = async (req: Request, res: Response) => {
             }
         })
 
-        logger.warn(`semesters filtered for user ${uSearch._id.toString()} with role ${req.user.role}. Results: ${filtered.toString()}`)
+        logger.warn(`semesters filtered for user ${uSearch._id.toString()} with role ${req.user.role}. Results: ${JSON.stringify(filtered)}`)
         res.status(200).json({message: 'OK', semesters: filtered})
     } catch(e) {
         logger.error(e)
