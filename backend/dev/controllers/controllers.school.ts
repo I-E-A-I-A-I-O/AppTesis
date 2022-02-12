@@ -21,7 +21,7 @@ export const getSemesters = async (req: Request, res: Response) => {
             const courses = s.courses
             
             if (req.user.role === 'teacher') {
-                const course = courses.find((c) => c.teacher.toString() === uSearch._id.toString())
+                const course = courses.find((c) => JSON.stringify(c.teacher) === JSON.stringify(uSearch._id))
 
                 if (course)
                     return s
