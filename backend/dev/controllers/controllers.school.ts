@@ -74,7 +74,7 @@ export const getCourses = async (req: Request, res: Response) => {
         }
         else {
             results = sSearch.courses.filter((semester) => {
-                const sem = semester.students.find((stu) => stu.id.toString() === uSearch._id.toString())
+                const sem = semester.students.find((stu) => stu.toString() === uSearch._id.toString())
 
                 if (sem) return semester;
             })
