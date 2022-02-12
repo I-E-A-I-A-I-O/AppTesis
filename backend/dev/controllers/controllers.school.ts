@@ -17,30 +17,29 @@ export const getSemesters = async (req: Request, res: Response) => {
 
         const search = collections.semesters.find()
         const docs = await search.toArray() as Semester[]
-        const filtered = docs.map((s) => {
+
+        let filtered = docs.map((s) => {
             const courses = s.courses
             
             if (req.user.role === 'teacher') {
                 const course = courses.find((c) => JSON.stringify(c.teacher) === JSON.stringify(uSearch._id))
 
-                if (course)
-                    return s
+                if (course) return s
             }
             else {
                 const course = courses.find((c) => {
-                    const student = course.students.find((st) => {
-                        return st.toString() === uSearch._id.toString()
-                    })
+                    const student = course.students.find((st) => JSON.stringify(st) === JSON.stringify(uSearch._id))
 
-                    if (student)
-                        return c
+                    if (student) return c
                 })
 
-                if (course)
-                    return s
+                if (course) return s
             }
         })
 
+        filtered = filtered.filter((s) => {
+            if (s) return s;
+        })
         logger.warn(`semesters filtered for user ${uSearch._id.toString()} with role ${req.user.role}. Results: ${JSON.stringify(filtered)}`)
         res.status(200).json({message: 'OK', semesters: filtered})
     } catch(e) {
