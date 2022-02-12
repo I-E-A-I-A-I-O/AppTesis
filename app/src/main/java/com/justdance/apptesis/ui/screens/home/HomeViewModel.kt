@@ -58,8 +58,6 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
         CoroutineScope(Dispatchers.IO).launch {
             val savedCourses = coursesRepository.getSemesterCourses(id)
-            Log.d("COURSES", "ID $id")
-            Log.d("COURSES", "${savedCourses.count()}")
 
             CoroutineScope(Dispatchers.Main).launch {
                 _courses.value = savedCourses
@@ -82,8 +80,6 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                             response.body()?.let { body ->
                                 val toDB = arrayListOf<Courses>()
                                 val toUsers = arrayListOf<Users>()
-                                Log.d("COURSES REPONSE", "COUNT ${body.courses.count()}")
-                                Log.d("COURSES REPONSE", "MESSAGE ${body.message}")
 
                                 body.courses.forEach { Course ->
                                     val queued = toDB.find {
@@ -155,41 +151,44 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
     fun update() {
         _isLoading.value = true
-        val net = Network()
-        net.service.getSemesters().enqueue(
-            object: Callback<GetSemestersResponse> {
-                override fun onResponse(
-                    call: Call<GetSemestersResponse>,
-                    response: Response<GetSemestersResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            response.body()?.let { reBody: GetSemestersResponse ->
-                                val toDB: ArrayList<Semesters> = arrayListOf()
+        CoroutineScope(Dispatchers.IO).launch {
+            val token = sessionRepository.getToken()
+            val net = Network()
+            net.service.getSemesters(token).enqueue(
+                object: Callback<GetSemestersResponse> {
+                    override fun onResponse(
+                        call: Call<GetSemestersResponse>,
+                        response: Response<GetSemestersResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                response.body()?.let { reBody: GetSemestersResponse ->
+                                    val toDB: ArrayList<Semesters> = arrayListOf()
 
-                                reBody.semesters.forEach { Semester ->
-                                    val s = semesters.value?.find {
-                                        return@find it.id == Semester.id
+                                    reBody.semesters.forEach { Semester ->
+                                        val s = semesters.value?.find {
+                                            it.id == Semester.id
+                                        }
+
+                                        if (s == null) {
+                                            toDB.add(Semesters(Semester.id, Semester.name, Semester.start, Semester.end))
+                                        }
                                     }
 
-                                    if (s == null) {
-                                        toDB.add(Semesters(Semester.id, Semester.name, Semester.start, Semester.end))
+                                    if (toDB.isNotEmpty()) {
+                                        semestersRepository.insertSemester(toDB)
                                     }
-                                }
-
-                                if (toDB.isNotEmpty()) {
-                                    semestersRepository.insertSemester(toDB)
                                 }
                             }
                         }
+                        _isLoading.value = false
                     }
-                    _isLoading.value = false
-                }
 
-                override fun onFailure(call: Call<GetSemestersResponse>, t: Throwable) {
-                    _isLoading.value = false
+                    override fun onFailure(call: Call<GetSemestersResponse>, t: Throwable) {
+                        _isLoading.value = false
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

@@ -30,7 +30,7 @@ interface Requests {
     fun session(@Header("authorization") token: String): Call<GenericResponse>
 
     @GET("school/semesters")
-    fun getSemesters(): Call<GetSemestersResponse>
+    fun getSemesters(@Header("authorization") token: String): Call<GetSemestersResponse>
 
     @GET("school/semesters/{semester}/courses")
     fun getSemesterCourses(@Path(value = "semester", encoded = true) semesterId: String, @Header("authorization") token: String): Call<GetSemesterCoursesResponse>
