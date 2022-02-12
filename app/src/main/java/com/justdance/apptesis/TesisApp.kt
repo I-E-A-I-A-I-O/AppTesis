@@ -103,7 +103,7 @@ class MainActivity : ComponentActivity() {
             scaffoldState = scaffoldState,
             bottomBar = {
                 AnimatedVisibility(visible = bottomNavRoute(currentDestination?.route)) {
-                    BottomNav(navController = navHost)
+                    BottomNav(navController = navHost, homeViewModel)
                 }
             },
             topBar = { if (topBarRoute(currentDestination?.route)) MyAppBar(navHost) }

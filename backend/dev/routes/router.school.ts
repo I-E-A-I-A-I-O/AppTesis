@@ -4,6 +4,6 @@ import { authenticateToken } from "../utils/token.middleware";
 
 export const schoolRouter = express.Router()
 
-schoolRouter.get('/semesters', getSemesters)
+schoolRouter.get('/semesters', authenticateToken, getSemesters)
 
 schoolRouter.get('/semesters/:semester/courses', authenticateToken, getCourses)
