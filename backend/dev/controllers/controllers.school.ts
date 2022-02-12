@@ -28,11 +28,9 @@ export const getSemesters = async (req: Request, res: Response) => {
             }
             else {
                 const course = courses.find((c) => {
-                    if (Object.keys(course).includes("students")) {
-                        const student = course.students.find((st) => JSON.stringify(st) === JSON.stringify(uSearch._id))
+                    const student = c.students.find((st) => JSON.stringify(st) === JSON.stringify(uSearch._id))
 
-                        if (student) return c
-                    }
+                    if (student) return c
                 })
 
                 if (course) return s
