@@ -13,31 +13,20 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.justdance.apptesis.ui.screens.home.HomeScreen
-import com.justdance.apptesis.ui.screens.login.LoginScreen
+import com.justdance.apptesis.navigation.graphs.*
 import com.justdance.apptesis.ui.screens.login.LoginViewModel
-import com.justdance.apptesis.ui.screens.register.RegisterScreen
 import com.justdance.apptesis.ui.screens.register.RegisterViewModel
-import com.justdance.apptesis.ui.screens.start.StartScreen
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.composables.BottomNav
 import com.justdance.apptesis.ui.composables.MyAppBar
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
-import com.justdance.apptesis.ui.screens.notifications.NotificationsScreen
-import com.justdance.apptesis.ui.screens.semesters.SemesterScreen
-import com.justdance.apptesis.ui.screens.settings.SettingsScreen
 import com.justdance.apptesis.ui.screens.settings.SettingsViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
@@ -124,66 +113,14 @@ class MainActivity : ComponentActivity() {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
                 }
             ) {
-                navigation(startDestination = "start", route = "identification") {
-                    composable("start") {
-                        StartScreen(navController = navHost, viewModel = startViewModel)
-                    }
-                    composable(
-                        "login?redirected={redirected}",
-                        arguments = listOf(
-                            navArgument("redirected") {
-                                defaultValue = false
-                                type = NavType.BoolType
-                            }
-                        )
-                    ) { backStackEntry ->
-                        backStackEntry.arguments?.let {
-                            if (it.getBoolean("redirected")) {
-                                loginViewModel.ciChanged(registerViewModel.ciText.value!!)
-                                loginViewModel.passChanged(registerViewModel.passText.value!!)
-                            }
-                        }
-                        LoginScreen(navHost, loginViewModel) {
-                                message, actionLabel, action: SnackActions ->
-                            onSnack(message, actionLabel, action)
-                        }
-                    }
-                    composable("register") {
-                        RegisterScreen(navHost, registerViewModel) {
-                                message, actionLabel, action: SnackActions ->
-                            onSnack(message, actionLabel, action)
-                        }
-                    }
+                identificationGraph(navHost, registerViewModel, loginViewModel, startViewModel) {
+                    message, actionLabel, action ->
+                    onSnack(message, actionLabel, action)
                 }
-                navigation("home", "homeNav") {
-                    composable("home") {
-                        it.destination.label = stringResource(id = R.string.home_screen_id)
-                        HomeScreen(navHost, homeViewModel)
-                    }
-                    composable(
-                        "semester?id={id}",
-                        arguments = listOf(
-                            navArgument("id") {
-                                type = NavType.StringType
-                            }
-                        )
-                    ) { backStackEntry ->
-                        backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
-                        SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
-                    }
-                }
-                navigation("settings", "settingsNav") {
-                    composable("settings") {
-                        it.destination.label = stringResource(id = R.string.settings_screen_id)
-                        SettingsScreen(navController = navHost, viewModel = settingsViewModel)
-                    }
-                }
-                navigation("notifications", "notificationsNav") {
-                    composable("notifications") {
-                        it.destination.label = stringResource(id = R.string.notifications_screen_id)
-                        NotificationsScreen(navController = navHost)
-                    }
-                }
+                homeGraph(navHost, homeViewModel)
+                settingsGraph(navHost, settingsViewModel)
+                notificationsGraph(navHost)
+                surveysGraph(navHost)
             }
         }
     }

@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -63,7 +63,13 @@ fun BottomNav(navController: NavHostController, viewModel: HomeViewModel) {
         routes.forEach { screen ->
             BottomNavigationItem(
                 icon = { Icon(screen.icon, contentDescription = null) },
-                label = { Text(stringResource(screen.resourceId)) },
+                label = {
+                    Text(
+                        stringResource(screen.resourceId),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     val currentRoute = currentDestination?.route
