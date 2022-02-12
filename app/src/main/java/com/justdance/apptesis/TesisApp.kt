@@ -25,8 +25,10 @@ import com.justdance.apptesis.ui.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.composables.BottomNav
+import com.justdance.apptesis.ui.composables.FAB
 import com.justdance.apptesis.ui.composables.MyAppBar
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
+import com.justdance.apptesis.ui.screens.semesters.AddCourseViewModel
 import com.justdance.apptesis.ui.screens.settings.SettingsViewModel
 import com.justdance.apptesis.ui.theme.AppTesisTheme
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private val startViewModel by viewModels<StartViewModel>()
     private val homeViewModel by viewModels<HomeViewModel>()
     private val settingsViewModel by viewModels<SettingsViewModel>()
+    private val addCourseViewModel by viewModels<AddCourseViewModel>()
     private lateinit var scope: CoroutineScope
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
@@ -95,7 +98,16 @@ class MainActivity : ComponentActivity() {
                     BottomNav(navController = navHost, homeViewModel)
                 }
             },
-            topBar = { if (topBarRoute(currentDestination?.route)) MyAppBar(navHost) }
+            topBar = {
+                AnimatedVisibility(topBarRoute(currentDestination?.route)) {
+                    MyAppBar(navHost)
+                }
+            },
+            floatingActionButton = {
+                AnimatedVisibility(fABRoute(currentDestination?.route)) {
+                    FAB(navHost)
+                }
+            }
         ) {
             AnimatedNavHost(
                 navController = navHost,
@@ -105,12 +117,6 @@ class MainActivity : ComponentActivity() {
                 },
                 exitTransition = {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
-                },
-                popEnterTransition = {
-                    slideIntoContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
-                },
-                popExitTransition = {
-                    slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
                 }
             ) {
                 identificationGraph(navHost, registerViewModel, loginViewModel, startViewModel) {
@@ -121,7 +127,7 @@ class MainActivity : ComponentActivity() {
                 settingsGraph(navHost, settingsViewModel)
                 notificationsGraph(navHost)
                 surveysGraph(navHost)
-                semestersGraph(navHost, homeViewModel)
+                semestersGraph(navHost, homeViewModel, addCourseViewModel)
             }
         }
     }
@@ -140,6 +146,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun fABRoute(route: String?): Boolean {
+        return when (route) {
+            null -> false
+            "semesters" -> true
+            else -> false
         }
     }
 

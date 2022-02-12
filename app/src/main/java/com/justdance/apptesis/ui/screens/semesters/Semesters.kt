@@ -3,8 +3,6 @@ package com.justdance.apptesis.ui.screens.semesters
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -16,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.justdance.apptesis.room.entities.Semesters
 import com.justdance.apptesis.ui.composables.CardItem
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
 
