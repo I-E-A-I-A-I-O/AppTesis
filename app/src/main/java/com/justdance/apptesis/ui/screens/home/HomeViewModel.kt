@@ -86,7 +86,11 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                 Log.d("COURSES REPONSE", "MESSAGE ${body.message}")
 
                                 body.courses.forEach { Course ->
-                                    if (!usersRepository.isIdRegistered(Course.teacherId.id)) {
+                                    val queued = toDB.find {
+                                        it.teacher == Course.teacherId.id
+                                    }
+
+                                    if (!usersRepository.isIdRegistered(Course.teacherId.id) && queued == null) {
                                         toUsers.add(
                                             Users(
                                                 Course.teacherId.id,
@@ -121,6 +125,9 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
                                 if (toDB.isNotEmpty()) {
                                     coursesRepository.insertCourse(toDB)
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        _courses.value = _courses.value?.plus(toDB)
+                                    }
                                 }
                             }
                         }
