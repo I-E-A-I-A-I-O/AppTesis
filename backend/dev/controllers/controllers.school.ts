@@ -73,7 +73,11 @@ export const getCourses = async (req: Request, res: Response) => {
             logger.warn(`Filtered courses for teacher ${uSearch._id} in semester ${sSearch._id}. Results: ${results.toString()}`)
         }
         else {
-            results = sSearch.courses.filter((semester) => semester.students.includes(uSearch._id))
+            results = sSearch.courses.filter((semester) => {
+                const sem = semester.students.find((stu) => stu.id.toString() === uSearch._id.toString())
+
+                if (sem) return semester;
+            })
         }
 
         
