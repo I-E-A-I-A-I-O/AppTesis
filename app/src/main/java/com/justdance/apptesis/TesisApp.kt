@@ -121,6 +121,7 @@ class MainActivity : ComponentActivity() {
                 settingsGraph(navHost, settingsViewModel)
                 notificationsGraph(navHost)
                 surveysGraph(navHost)
+                semestersGraph(navHost, homeViewModel)
             }
         }
     }
@@ -158,6 +159,8 @@ class MainActivity : ComponentActivity() {
             "settings" -> true
             "home" -> true
             "notifications" -> true
+            "semesters" -> true
+            "surveys" -> true
             else -> false
         }
     }

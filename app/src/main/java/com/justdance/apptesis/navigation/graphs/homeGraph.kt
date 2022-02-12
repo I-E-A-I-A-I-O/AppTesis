@@ -17,16 +17,5 @@ fun NavGraphBuilder.homeGraph(navHost: NavHostController, homeViewModel: HomeVie
             it.destination.label = stringResource(id = R.string.home_screen_id)
             HomeScreen(navHost, homeViewModel)
         }
-        composable(
-            "semester?id={id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            backStackEntry.destination.label = stringResource(id = R.string.period_screen_id)
-            SemesterScreen(navHost, homeViewModel, backStackEntry.arguments?.getString("id"))
-        }
     }
 }
