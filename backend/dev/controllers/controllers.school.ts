@@ -4,7 +4,7 @@ import { collections } from "../services/database.service"
 import {Semester, SemesterCourse} from "../models/semesters"
 import {User, UserShort} from "../models/user"
 import { ObjectId } from "mongodb"
-import {Course} from "../models/course"
+import {Course, JoinCourse} from "../models/course"
 
 export const getSemesters = async (req: Request, res: Response) => {
     try {
@@ -129,7 +129,26 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
     })
 
     if (currentSemester) {
-        
+        const requestSearch = collections.joinRequests.find({studentId: uSearch._id, semesterId: currentSemester._id})
+        const requests = await requestSearch.toArray() as JoinCourse[]
+
+        const unrequestedCourses = currentSemester.courses.map((c) => {
+            const requested = requests.find((r) => {
+                return JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) && JSON.stringify(r.courseId) === JSON.stringify(c.course)
+            })
+
+            if (!requested)
+                return c
+        })
+
+        return res.status(200).json({
+            message: 'OK',
+            semesterId: currentSemester._id,
+            semesterName: currentSemester.name,
+            from: currentSemester.from,
+            to: currentSemester.to,
+            courses: unrequestedCourses
+        })
     }
     else {
         res.status(404).json({message: "No hay un semestre activo para este periodo."})
