@@ -4,7 +4,7 @@ import { collections } from "../services/database.service"
 import {Semester, SemesterCourse} from "../models/semesters"
 import {User, UserShort} from "../models/user"
 import { ObjectId } from "mongodb"
-import Course from "../models/course"
+import {Course} from "../models/course"
 
 export const getSemesters = async (req: Request, res: Response) => {
     try {
@@ -110,5 +110,28 @@ export const getCourses = async (req: Request, res: Response) => {
     } catch(e) {
         logger.error(e)
         res.status(500).json({message: 'Error obteniendo las materias.'})
+    }
+}
+
+export const getCurrentSemester = async (req: Request, res: Response) => {
+    const uSearch = await collections.users.findOne({ ci: req.user.ci }) as unknown as User
+        
+    if (!uSearch) {
+        logger.warn('failed courses GET due to CI not found')
+        return res.status(404).json({message: "C.I no encontrada."})
+    }
+
+    const currentDate = new Date()
+    const search = collections.semesters.find()
+    const docs = await search.toArray() as Semester[]
+    const currentSemester = docs.find((v) => {
+        new Date(v.from) <= currentDate && new Date(v.to) >= currentDate
+    })
+
+    if (currentSemester) {
+        
+    }
+    else {
+        res.status(404).json({message: "No hay un semestre activo para este periodo."})
     }
 }

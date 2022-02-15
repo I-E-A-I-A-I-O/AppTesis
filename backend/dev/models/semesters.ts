@@ -2,9 +2,9 @@ import {ObjectId} from "mongodb"
 
 export class Semester {
     constructor(
-        public name: String,
-        public from: String,
-        public to: String,
+        public name: string,
+        public from: string,
+        public to: string,
         public courses: SemesterCourse[],
         public _id?: ObjectId
     ) {}

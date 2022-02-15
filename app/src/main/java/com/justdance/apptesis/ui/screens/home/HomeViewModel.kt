@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
 
 class HomeViewModel(app: Application): AndroidViewModel(app) {
     private val semestersRepository: SemestersRepository
@@ -171,7 +172,11 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                         }
 
                                         if (s == null) {
-                                            toDB.add(Semesters(Semester.id, Semester.name, Semester.start, Semester.end))
+                                            toDB.add(Semesters(Semester.id,
+                                                    Semester.name,
+                                                    LocalDate.parse(Semester.start),
+                                                    LocalDate.parse(Semester.end)
+                                                ))
                                         }
                                     }
 

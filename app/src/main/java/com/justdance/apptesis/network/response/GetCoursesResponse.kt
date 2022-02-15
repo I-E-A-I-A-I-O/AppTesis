@@ -7,6 +7,15 @@ data class GetSemesterCoursesResponse(
     @SerializedName("courses") val courses: List<SemesterCourse>
 )
 
+data class GetSemesterResponse(
+    @SerializedName("message") val message: String,
+    @SerializedName("semesterId") val semesterId: String,
+    @SerializedName("semesterName") val semesterName: String,
+    @SerializedName("from") val start: String,
+    @SerializedName("to") val end: String,
+    @SerializedName("courses") val courses: List<SemesterCourse>
+)
+
 data class SemesterCourse(
     @SerializedName("_id") val id: String,
     @SerializedName("name") val name: String,

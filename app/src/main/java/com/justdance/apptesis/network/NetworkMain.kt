@@ -2,10 +2,7 @@ package com.justdance.apptesis.network
 
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
-import com.justdance.apptesis.network.response.GenericResponse
-import com.justdance.apptesis.network.response.GetSemesterCoursesResponse
-import com.justdance.apptesis.network.response.GetSemestersResponse
-import com.justdance.apptesis.network.response.LoginResponse
+import com.justdance.apptesis.network.response.*
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -34,6 +31,9 @@ interface Requests {
 
     @GET("school/semesters/{semester}/courses")
     fun getSemesterCourses(@Path(value = "semester", encoded = true) semesterId: String, @Header("authorization") token: String): Call<GetSemesterCoursesResponse>
+
+    @GET("school/semesters/current")
+    fun getCurrentSemester(@Header("authorization") token: String): Call<GetSemesterResponse>
 }
 
 class Network {

@@ -6,7 +6,8 @@ export const collections: {
      users?: mongoDB.Collection,
      careers?: mongoDB.Collection,
      courses?: mongoDB.Collection,
-     semesters?: mongoDB.Collection
+     semesters?: mongoDB.Collection,
+     joinRequests?: mongoDB.Collection
     } = {}
 
 export async function connectToDatabase() {
@@ -23,4 +24,6 @@ export async function connectToDatabase() {
     logger.debug(`Connection to collection ${process.env.COURSES_COLLECTION_NAME} successful`)
     collections.semesters = db.collection(process.env.SEMESTERS_COLLECTION_NAME)
     logger.debug(`Connection to collection ${process.env.SEMESTERS_COLLECTION_NAME} successful`)
+    collections.joinRequests = db.collection(process.env.REQUESTS_COLLECTION_NAME)
+    logger.debug(`Connection to collection ${process.env.REQUESTS_COLLECTION_NAME} successful`)
 }
