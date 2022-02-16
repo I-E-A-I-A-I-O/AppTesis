@@ -5,6 +5,8 @@ import {Semester, SemesterCourse} from "../models/semesters"
 import {User, UserShort} from "../models/user"
 import { ObjectId } from "mongodb"
 import {Course, JoinCourse} from "../models/course"
+import { userLogin } from "./controllers.users"
+import {TeacherHandleRequestBody, OperationType} from '../models/course.request'
 
 export const getSemesters = async (req: Request, res: Response) => {
     try {
@@ -132,14 +134,23 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
         const requestSearch = collections.joinRequests.find({studentId: uSearch._id, semesterId: currentSemester._id})
         const requests = await requestSearch.toArray() as JoinCourse[]
 
-        const unrequestedCourses = currentSemester.courses.map((c) => {
-            const requested = requests.find((r) => {
-                return JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) && JSON.stringify(r.courseId) === JSON.stringify(c.course)
-            })
+        const unrequestedCoursesPromise = currentSemester.courses.map(async (c) => {
+            
+            const courseInfo = await collections.courses.findOne({_id: c.course}) as Course
 
-            if (!requested)
-                return c
+            if (courseInfo) {
+                if (courseInfo.careers.includes(uSearch.career)) {
+                    const requested = requests.find((r) => {
+                        return JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) && JSON.stringify(r.courseId) === JSON.stringify(c.course)
+                    })
+        
+                    if (!requested)
+                        return c
+                }
+            }
         })
+
+        const unrequestedCourses = await Promise.all(unrequestedCoursesPromise)
 
         return res.status(200).json({
             message: 'OK',
@@ -152,5 +163,107 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
     }
     else {
         res.status(404).json({message: "No hay un semestre activo para este periodo."})
+    }
+}
+
+const requestCourseInvite = async (req: Request, res: Response) => {
+    if (req.user.role !== 'student')
+        return res.status(401).json({message: 'No tienes permiso para realizar esta operacion.'})
+
+    const uSearch = await collections.users.findOne({ ci: req.user.ci }) as unknown as User
+        
+    if (!uSearch) {
+        logger.warn('failed courses GET due to CI not found')
+        return res.status(404).json({message: "C.I no encontrada."})
+    }
+
+    const {courseId} = req.params
+
+   try {
+    const courseInfo = await collections.courses.findOne({_id: new ObjectId(courseId)})
+    
+    if (!courseInfo) {
+        return res.status(404).json({message: `La materia con id ${courseId} no existe.`})
+    }
+
+    const currentDate = new Date()
+    const search = collections.semesters.find()
+    const docs = await search.toArray() as Semester[]
+    const currentSemester = docs.find((v) => {
+        new Date(v.from) <= currentDate && new Date(v.to) >= currentDate
+    })
+
+    if (!currentSemester) {
+        logger.error(`Error creating new course join request for student with id ${uSearch._id} in course id ${courseId}`)
+        return res.status(404).json({message: 'No se pudo procesar la operacion.'})
+    }
+
+    const courseFind = currentSemester.courses.find((v) => {
+        JSON.stringify(v.course) === JSON.stringify(courseId)
+    })
+
+    if (!courseFind) {
+        logger.error(`Error creating course join request for student with id ${uSearch._id} because course with id ${currentSemester._id} for the current semester`)
+        return res.status(400).json({message: 'Materia no existe para el trimestre actual'})
+    }
+
+    const requests = await collections.joinRequests.findOne({
+        courseId: new Object(courseId),
+        userId: uSearch._id,
+        semesterId: currentSemester._id
+    })
+
+    if (!requests) {
+        return res.status(400).json({message: 'Error, ya existe una invitacion para unirte a esta materia.'})
+    }
+
+    const request = new JoinCourse(
+        currentSemester._id,
+        uSearch._id,
+        new ObjectId(courseId),
+        'Pendiente'
+    )
+
+    collections.joinRequests.insertOne(request)
+
+    return res.status(201).json({message: 'Peticion para unirse al curso enviada!'})
+   }
+   catch (e) {
+    logger.error(e)
+    res.status(500).json({message: 'Error obteniendo las materias.'})
+   }
+}
+
+const handleInvite = async (req: Request, res: Response) => {
+    if (req.user.role !== 'teacher')
+        return res.status(401).json({message: 'No tienes permiso para realizar esta operacion.'})
+
+    const uSearch = await collections.users.findOne({ ci: req.user.ci }) as unknown as User
+    
+    if (!uSearch) {
+        logger.warn('failed courses GET due to CI not found')
+        return res.status(404).json({message: "C.I no encontrada."})
+    }
+
+    const body = req.body as TeacherHandleRequestBody
+    const request = await collections.joinRequests.findOne({_id: body.requestId}) as JoinCourse
+
+    if (!request) {
+        logger.error({message: `Error handling invite ${body.requestId} for teacher ${uSearch._id} because requests doesn't exist`})
+        return res.status(400).json({message: 'No se pudo procesar la operacion.'})
+    }
+
+    if (body.operationType === OperationType.Accept) {
+        await collections.joinRequests.findOneAndUpdate({_id: body.requestId}, {status: 'accepted'})
+        await collections.semesters.findOneAndUpdate({
+            _id: request.semesterId, 
+            'courses._id': request.courseId
+        }, 
+        {
+            $
+        })
+    }
+    else {
+
     }
 }

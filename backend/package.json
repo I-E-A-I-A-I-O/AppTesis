@@ -4,7 +4,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-	  "build-ts": "tsc",
+    "build-ts": "tsc",
     "postinstall": "npm run build-ts",
     "start": "npm run serve",
     "serve": "node dist/bin/www.js"

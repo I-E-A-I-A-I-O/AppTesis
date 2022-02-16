@@ -2,6 +2,7 @@ import {ObjectId} from "mongodb"
 
 export class Course {
     constructor(
+        public careers: string[],
         public name: string,
         public _id?: ObjectId
     ) {}
