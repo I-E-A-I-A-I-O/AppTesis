@@ -181,23 +181,29 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
       })) as Course;
 
       if (courseInfo) {
-        if (courseInfo.careers.includes(uSearch.career)) {
-          const requested = requests.find((r) => {
-            return (
-              JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
-              JSON.stringify(r.courseId) === JSON.stringify(c.course)
-            );
-          });
+        const requested = requests.find((r) => {
+          return (
+            JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
+            JSON.stringify(r.courseId) === JSON.stringify(c.course)
+          );
+        });
 
-          if (!requested) return c;
+        if (!requested) {
+          const isInCourse = c.students.find(
+            (st) => JSON.stringify(st) === JSON.stringify(uSearch._id)
+          );
+
+          if (!isInCourse) return c;
         }
       }
     });
 
     const unrequestedCourses = await Promise.all(unrequestedCoursesPromise);
 
-    logger.warn(`Succesfully filtered courses for user ${JSON.stringify(uSearch._id)} 
-    in the current semester. Results: ${JSON.stringify(unrequestedCourses)}`)
+    logger.warn(`Succesfully filtered courses for user ${JSON.stringify(
+      uSearch._id
+    )} 
+    in the current semester. Results: ${JSON.stringify(unrequestedCourses)}`);
 
     return res.status(200).json({
       message: "OK",
