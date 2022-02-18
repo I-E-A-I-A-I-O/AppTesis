@@ -11,9 +11,9 @@ export const schoolRouter = express.Router();
 
 schoolRouter.get("/semesters", authenticateToken, getSemesters);
 
-schoolRouter.get("/semesters/:semester/courses", authenticateToken, getCourses);
-
 schoolRouter.get("/semesters/current", authenticateToken, getCurrentSemester);
+
+schoolRouter.get("/semesters/:semester/courses", authenticateToken, getCourses);
 
 schoolRouter.post(
   "/semesters/current/courses/:courseId/request",

@@ -24,4 +24,8 @@ class CoursesRepository(private val coursesDao: CoursesDao) {
     suspend fun deleteCourse(course: Courses) {
         coursesDao.delete(course)
     }
+
+    suspend fun deleteCourses(courses: Array<Courses>) {
+        coursesDao.delete(*courses)
+    }
 }

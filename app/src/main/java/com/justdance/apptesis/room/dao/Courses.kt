@@ -22,5 +22,5 @@ interface CoursesDao {
     suspend fun insertAll(vararg courses: Courses)
 
     @Delete
-    suspend fun delete(course: Courses)
+    suspend fun delete(vararg courses: Courses)
 }

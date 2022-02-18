@@ -171,7 +171,6 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
   if (currentSemester) {
     const requestSearch = collections.joinRequests.find({
       studentId: uSearch._id,
-      semesterId: currentSemester._id,
     });
     const requests = (await requestSearch.toArray()) as JoinCourse[];
 

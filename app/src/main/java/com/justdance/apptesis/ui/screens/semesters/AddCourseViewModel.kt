@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.justdance.apptesis.room.entities.Semesters
 import com.justdance.apptesis.network.Network
 import com.justdance.apptesis.network.response.GetSemesterResponse
 import com.justdance.apptesis.room.AppDatabase
@@ -81,7 +82,7 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
 
                                 if (!semestersRepository.isIdRegistered(body.semesterId)) {
                                     semestersRepository.insertSemester(
-                                        com.justdance.apptesis.room.entities.Semesters(
+                                        Semesters(
                                             body.semesterId,
                                             body.semesterName,
                                             LocalDate.parse(body.start),
@@ -121,6 +122,24 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
                                                 listOf()
                                             )
                                         )
+                                    }
+                                }
+
+                                val toDelete = savedCourses.mapNotNull { localCourse ->
+                                    val inRemote = body.courses.find { remoteCourse ->
+                                        remoteCourse.id == localCourse.id
+                                    }
+
+                                    if (inRemote == null)
+                                        localCourse
+                                    else
+                                        null
+                                }
+
+                                if (toDelete.isNotEmpty()) {
+                                    coursesRepository.deleteCourses(toDelete.toTypedArray())
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        _courses.value = _courses.value?.minus(toDelete)
                                     }
                                 }
 
