@@ -164,9 +164,9 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
   const currentDate = new Date();
   const search = collections.semesters.find();
   const docs = (await search.toArray()) as Semester[];
-  const currentSemester = docs.find((v) => {
-    new Date(v.from) <= currentDate && new Date(v.to) >= currentDate;
-  });
+  const currentSemester = docs.find(
+    (v) => new Date(v.from) <= currentDate && new Date(v.to) >= currentDate
+  );
 
   if (currentSemester) {
     const requestSearch = collections.joinRequests.find({
@@ -205,6 +205,9 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
       courses: unrequestedCourses,
     });
   } else {
+    logger.warn(
+      "Request failed with 404 because there's no active semester for the current date."
+    );
     res
       .status(404)
       .json({ message: "No hay un semestre activo para este periodo." });
