@@ -80,24 +80,8 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                         CoroutineScope(Dispatchers.IO).launch {
                             response.body()?.let { body ->
                                 val toDB = arrayListOf<Courses>()
-                                val toUsers = arrayListOf<Users>()
 
                                 body.courses.forEach { Course ->
-                                    val queued = toDB.find {
-                                        it.teacher == Course.teacherId.id
-                                    }
-
-                                    if (!usersRepository.isIdRegistered(Course.teacherId.id) && queued == null) {
-                                        toUsers.add(
-                                            Users(
-                                                Course.teacherId.id,
-                                                Course.teacherId.name,
-                                                Course.teacherId.ci,
-                                                Course.teacherId.email
-                                            )
-                                        )
-                                    }
-
                                     val c = savedCourses.find {
                                         it.id == Course.id && it.semester == id && it.group == Course.group
                                     }
@@ -109,15 +93,11 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                                 Course.name,
                                                 id,
                                                 Course.group,
-                                                Course.teacherId.id,
+                                                Course.teacherId,
                                                 listOf()
                                             )
                                         )
                                     }
-                                }
-
-                                if (toUsers.isNotEmpty()) {
-                                    usersRepository.insertUser(toUsers)
                                 }
 
                                 if (toDB.isNotEmpty()) {

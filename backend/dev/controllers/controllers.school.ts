@@ -174,24 +174,37 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
     });
     const requests = (await requestSearch.toArray()) as JoinCourse[];
 
-    let unrequestedCourses = currentSemester.courses.map((c) => {
-      const requested = requests.find((r) => {
-        return (
-          JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
-          JSON.stringify(r.courseId) === JSON.stringify(c.course)
-        );
-      });
+    const unrequestedCoursesPromise = currentSemester.courses.map(async (c) => {
+      const courseInfo = (await collections.courses.findOne({
+        _id: c.course,
+        careers: uSearch.career,
+      })) as Course;
 
-      if (!requested) {
-        const isInCourse = c.students.find(
-          (st) => JSON.stringify(st) === JSON.stringify(uSearch._id)
-        );
+      if (courseInfo) {
+        const requested = requests.find((r) => {
+          return (
+            JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
+            JSON.stringify(r.courseId) === JSON.stringify(c.course)
+          );
+        });
 
-        if (!isInCourse) return c;
+        if (!requested) {
+          const isInCourse = c.students.find(
+            (st) => JSON.stringify(st) === JSON.stringify(uSearch._id)
+          );
+
+          if (!isInCourse)
+            return {
+              _id: courseInfo._id,
+              name: courseInfo.name,
+              teacher: c.teacher,
+              group: c.group,
+            };
+        }
       }
     });
 
-    unrequestedCourses = unrequestedCourses.filter(v => v !== null)
+    const unrequestedCourses = await Promise.all(unrequestedCoursesPromise);
 
     logger.warn(
       `Succesfully filtered courses for user ${JSON.stringify(
