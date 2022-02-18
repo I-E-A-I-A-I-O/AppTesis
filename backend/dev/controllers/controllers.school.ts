@@ -174,36 +174,30 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
     });
     const requests = (await requestSearch.toArray()) as JoinCourse[];
 
-    const unrequestedCoursesPromise = currentSemester.courses.map(async (c) => {
-      const courseInfo = (await collections.courses.findOne({
-        _id: c.course,
-        careers: uSearch.career,
-      })) as Course;
+    const unrequestedCourses = currentSemester.courses.map((c) => {
+      const requested = requests.find((r) => {
+        return (
+          JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
+          JSON.stringify(r.courseId) === JSON.stringify(c.course)
+        );
+      });
 
-      if (courseInfo) {
-        const requested = requests.find((r) => {
-          return (
-            JSON.stringify(r.studentId) === JSON.stringify(uSearch._id) &&
-            JSON.stringify(r.courseId) === JSON.stringify(c.course)
-          );
-        });
+      if (!requested) {
+        const isInCourse = c.students.find(
+          (st) => JSON.stringify(st) === JSON.stringify(uSearch._id)
+        );
 
-        if (!requested) {
-          const isInCourse = c.students.find(
-            (st) => JSON.stringify(st) === JSON.stringify(uSearch._id)
-          );
-
-          if (!isInCourse) return c;
-        }
+        if (!isInCourse) return c;
       }
     });
 
-    const unrequestedCourses = await Promise.all(unrequestedCoursesPromise);
-
-    logger.warn(`Succesfully filtered courses for user ${JSON.stringify(
-      uSearch._id
-    )} 
-    in the current semester. Results: ${JSON.stringify(unrequestedCourses)}`);
+    logger.warn(
+      `Succesfully filtered courses for user ${JSON.stringify(
+        uSearch._id
+      )} in the current semester. Results: ${JSON.stringify(
+        unrequestedCourses
+      )}`
+    );
 
     return res.status(200).json({
       message: "OK",
