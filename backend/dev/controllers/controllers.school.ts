@@ -196,6 +196,9 @@ export const getCurrentSemester = async (req: Request, res: Response) => {
 
     const unrequestedCourses = await Promise.all(unrequestedCoursesPromise);
 
+    logger.warn(`Succesfully filtered courses for user ${JSON.stringify(uSearch._id)} 
+    in the current semester. Results: ${JSON.stringify(unrequestedCourses)}`)
+
     return res.status(200).json({
       message: "OK",
       semesterId: currentSemester._id,
