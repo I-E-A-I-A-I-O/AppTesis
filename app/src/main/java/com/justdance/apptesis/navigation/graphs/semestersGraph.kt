@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.justdance.apptesis.R
+import com.justdance.apptesis.SnackActions
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
 import com.justdance.apptesis.ui.screens.semesters.AddCourseScreen
 import com.justdance.apptesis.ui.screens.semesters.AddCourseViewModel
@@ -21,7 +22,8 @@ import com.justdance.apptesis.ui.screens.semesters.Semesters
 fun NavGraphBuilder.semestersGraph(
     navHost: NavHostController,
     homeViewModel: HomeViewModel,
-    addCourseViewModel: AddCourseViewModel
+    addCourseViewModel: AddCourseViewModel,
+    onSnack: (message: String, actionLabel: String?, action: SnackActions) -> Unit
 ) {
     navigation("semesters", "semestersNav") {
         composable("semesters") {
@@ -48,7 +50,7 @@ fun NavGraphBuilder.semestersGraph(
                 slideOutOfContainer(AnimatedContentScope.SlideDirection.Down, animationSpec = tween(700))
             }) {
             it.destination.label = stringResource(id = R.string.add_course_screen_id)
-            AddCourseScreen(navHost = navHost, viewModel = addCourseViewModel)
+            AddCourseScreen(navHost = navHost, viewModel = addCourseViewModel, onSnack)
         }
     }
 }

@@ -91,22 +91,24 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
                                 }
 
                                 body.courses.forEach { Course ->
-                                    val c = savedCourses.find {
-                                        it.id == Course.id && it.group == Course.group
-                                    }
+                                    if (Course != null) {
+                                        val c = savedCourses.find {
+                                            it.id == Course.id && it.group == Course.group
+                                        }
 
-                                    if (c == null) {
-                                        Log.d("TEST", "$Course")
-                                        toDB.add(
-                                            Courses(
-                                                Course.id,
-                                                Course.name,
-                                                body.semesterId,
-                                                Course.group,
-                                                Course.teacherId,
-                                                listOf()
+                                        if (c == null) {
+                                            Log.d("TEST", "$Course")
+                                            toDB.add(
+                                                Courses(
+                                                    Course.id,
+                                                    Course.name,
+                                                    body.semesterId,
+                                                    Course.group,
+                                                    Course.teacherId,
+                                                    listOf()
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
 

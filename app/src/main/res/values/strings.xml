@@ -12,4 +12,6 @@
     <string name="period_screen_id">Semestre</string>
     <string name="surveys_screen_id">Encuestas</string>
     <string name="add_course_screen_id">Añadir materia</string>
+    <string name="delete">Eliminar</string>
+    <string name="join">Unirse</string>
 </resources>

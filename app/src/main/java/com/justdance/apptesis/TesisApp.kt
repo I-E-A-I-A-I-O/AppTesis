@@ -9,10 +9,12 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -25,6 +27,7 @@ import com.justdance.apptesis.ui.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.composables.BottomNav
+import com.justdance.apptesis.ui.composables.BottomSheet
 import com.justdance.apptesis.ui.composables.FAB
 import com.justdance.apptesis.ui.composables.MyAppBar
 import com.justdance.apptesis.ui.screens.home.HomeViewModel
@@ -50,6 +53,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var scope: CoroutineScope
     private lateinit var scaffoldState: ScaffoldState
     private lateinit var navHost: NavHostController
+    @OptIn(ExperimentalMaterialApi::class)
+    private lateinit var modalBottomSheetState: ModalBottomSheetState
 
 
     @ExperimentalPermissionsApi
@@ -66,6 +71,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     @ExperimentalPermissionsApi
     @ExperimentalComposeUiApi
     @ExperimentalAnimationApi
@@ -73,6 +79,7 @@ class MainActivity : ComponentActivity() {
     fun TesisApp() {
         navHost = rememberAnimatedNavController()
         scaffoldState = rememberScaffoldState()
+        modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
         scope = rememberCoroutineScope()
         val backStackEntry by navHost.currentBackStackEntryAsState()
         val currentDestination = backStackEntry?.destination
@@ -119,15 +126,16 @@ class MainActivity : ComponentActivity() {
                     slideOutOfContainer(AnimatedContentScope.SlideDirection.Right, animationSpec = tween(700))
                 }
             ) {
-                identificationGraph(navHost, registerViewModel, loginViewModel, startViewModel) {
-                    message, actionLabel, action ->
+                identificationGraph(navHost, registerViewModel, loginViewModel, startViewModel) { message, actionLabel, action ->
                     onSnack(message, actionLabel, action)
                 }
                 homeGraph(navHost, homeViewModel)
                 settingsGraph(navHost, settingsViewModel)
                 notificationsGraph(navHost)
                 surveysGraph(navHost)
-                semestersGraph(navHost, homeViewModel, addCourseViewModel)
+                semestersGraph(navHost, homeViewModel, addCourseViewModel) { message, actionLabel, action ->
+                    onSnack(message, actionLabel, action)
+                }
             }
         }
     }

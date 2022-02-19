@@ -42,9 +42,7 @@ fun NavGraphBuilder.identificationGraph(
                     loginViewModel.passChanged(registerViewModel.passText.value!!)
                 }
             }
-            LoginScreen(navHost, loginViewModel) { message, actionLabel, action: SnackActions ->
-                onSnack(message, actionLabel, action)
-            }
+            LoginScreen(navHost, loginViewModel, onSnack)
         }
     }
 }

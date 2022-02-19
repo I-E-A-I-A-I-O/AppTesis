@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,10 +17,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.justdance.apptesis.ui.composables.CardItem
+import com.justdance.apptesis.SnackActions
+import com.justdance.apptesis.ui.composables.CardItemWithButton
 
 @Composable
-fun AddCourseScreen(navHost: NavHostController, viewModel: AddCourseViewModel) {
+fun AddCourseScreen(
+    navHost: NavHostController,
+    viewModel: AddCourseViewModel,
+    onSnack: (message: String, actionLabel: String?, action: SnackActions) -> Unit
+) {
     val courses by viewModel.courses.observeAsState(listOf())
     val state = rememberLazyListState()
 
@@ -35,8 +42,8 @@ fun AddCourseScreen(navHost: NavHostController, viewModel: AddCourseViewModel) {
         else {
             LazyColumn(state = state) {
                 items(courses) { item ->
-                    CardItem(title = item.name, info1 = "x", info2 = "d") {
-
+                    CardItemWithButton(title = item.name, info1 = "Seccion ${item.group}", info2 = "", Icon = Icons.Filled.GroupAdd) {
+                        onSnack("Creando peticion...", null, SnackActions.NONE)
                     }
                 }
             }
