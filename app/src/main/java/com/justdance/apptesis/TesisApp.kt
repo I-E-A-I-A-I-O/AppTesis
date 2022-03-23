@@ -9,12 +9,10 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -27,7 +25,6 @@ import com.justdance.apptesis.ui.screens.register.RegisterViewModel
 import com.justdance.apptesis.ui.screens.start.StartViewModel
 import com.justdance.apptesis.services.LocationService
 import com.justdance.apptesis.ui.composables.BottomNav
-import com.justdance.apptesis.ui.composables.BottomSheet
 import com.justdance.apptesis.ui.composables.FAB
 import com.justdance.apptesis.ui.composables.MyAppBar
 import com.justdance.apptesis.ui.screens.home.HomeViewModel

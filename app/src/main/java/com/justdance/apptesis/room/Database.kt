@@ -21,7 +21,7 @@ import com.justdance.apptesis.room.entities.Users
         Courses::class,
         Session::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

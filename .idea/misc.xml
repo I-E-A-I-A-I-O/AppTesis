@@ -7,6 +7,8 @@
         <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/fragment_login.xml" value="0.33" />
         <entry key="..\:/Users/Jesus/AndroidStudioProjects/AppTesis/app/src/main/res/layout/fragment_register.xml" value="0.33" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_close_24.xml" value="0.1565" />
       </map>
     </option>
   </component>
