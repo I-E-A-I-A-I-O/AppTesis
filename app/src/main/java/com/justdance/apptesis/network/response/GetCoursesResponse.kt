@@ -20,7 +20,8 @@ data class SemesterCourse(
     @SerializedName("_id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("teacher") val teacherId: String,
-    @SerializedName("group") val group: String
+    @SerializedName("group") val group: String,
+    @SerializedName("students") val students: List<String>?
 )
 
 data class User(

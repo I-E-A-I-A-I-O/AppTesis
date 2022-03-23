@@ -128,6 +128,7 @@ export const getCourses = async (req: Request, res: Response) => {
           name: currentCourse.name,
           teacher: c.teacher,
           group: c.group,
+          students: c.students
         };
       }
     });

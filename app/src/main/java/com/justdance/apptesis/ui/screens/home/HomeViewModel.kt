@@ -93,7 +93,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                                 id,
                                                 Course.group,
                                                 Course.teacherId,
-                                                listOf()
+                                                Course.students!!
                                             )
                                         )
                                     }
