@@ -9,9 +9,13 @@ class CoursesRepository(private val coursesDao: CoursesDao) {
         return coursesDao.getFromSemester(semesterId)
     }
 
-    suspend fun getSemesterCoursesUser(semesterId: String, userId: String): List<Courses> {
+    suspend fun getSemesterCoursesUser(semesterId: String, userId: String, role: String): List<Courses> {
         val courses = coursesDao.getFromSemester(semesterId)
-        return courses.filter { it.students.contains(userId) }
+
+        return when (role) {
+            "teacher" -> courses
+            else -> courses.filter { it.students.contains(userId) }
+        }
     }
 
     suspend fun updateStudents(courseId: String, students: List<String>) {

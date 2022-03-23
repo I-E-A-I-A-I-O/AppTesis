@@ -58,7 +58,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
 
         CoroutineScope(Dispatchers.IO).launch {
             val session = sessionRepository.getFirstSession()
-            val savedCourses = coursesRepository.getSemesterCoursesUser(id, session.userId)
+            val savedCourses = coursesRepository.getSemesterCoursesUser(id, session.userId, session.role)
 
             CoroutineScope(Dispatchers.Main).launch {
                 _courses.value = savedCourses
