@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.time.LocalDate
 
 class AddCourseViewModel(app: Application): AndroidViewModel(app) {
@@ -45,6 +46,34 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
 
     private var _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
+
+    fun joinCourse(id: String, onDone: (message: String) -> Unit) {
+        _isLoading.value = true
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val token = sessionRepository.getToken()
+            val network = Network()
+            var message = ""
+            try {
+                val res = network.service.joinCourse(id, token).execute()
+
+                if (res.isSuccessful) {
+                    message = "Peticion creada."
+                }
+                else {
+                    message = res.message()
+                }
+            } catch (err: Exception) {
+                Log.e("HTTP Request", "GET courses error", err)
+                message = "Error creando la peticion. Intente de nuevo mas tarde."
+            } finally {
+                _isLoading.value = false
+                CoroutineScope(Dispatchers.Default).launch {
+                    onDone(message)
+                }
+            }
+        }
+    }
 
     fun getCourses() {
         _isLoading.value = true

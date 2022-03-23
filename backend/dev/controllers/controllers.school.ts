@@ -280,7 +280,7 @@ export const requestCourseInvite = async (req: Request, res: Response) => {
 
     if (!courseFind) {
       logger.error(
-        `Error creating course join request for student with id ${uSearch._id} because course with id ${currentSemester._id} for the current semester`
+        `Error creating course join request for student with id ${uSearch._id} because there's no course with id ${currentSemester._id} for the current semester`
       );
       return res
         .status(400)

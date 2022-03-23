@@ -34,6 +34,9 @@ interface Requests {
 
     @GET("school/semesters/current")
     fun getCurrentSemester(@Header("authorization") token: String): Call<GetSemesterResponse>
+
+    @GET("school/semesters/current/courses/{course}/request")
+    fun joinCourse(@Path(value = "course", encoded = true) courseId: String, @Header("authorization") token: String): Call<GenericResponse>
 }
 
 class Network {

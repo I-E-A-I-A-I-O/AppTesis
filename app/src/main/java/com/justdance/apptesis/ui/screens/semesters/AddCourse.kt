@@ -27,13 +27,16 @@ fun AddCourseScreen(
     onSnack: (message: String, actionLabel: String?, action: SnackActions) -> Unit
 ) {
     val courses by viewModel.courses.observeAsState(listOf())
+    val loading by viewModel.isLoading.observeAsState(initial = false)
     val state = rememberLazyListState()
     val bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     val selectedId = remember { mutableStateOf("") }
     val onJoinCourse = { id: String ->
-        if (id.isNotEmpty()) {
-
+        if (id.isNotEmpty().and(loading.not())) {
+            viewModel.joinCourse(selectedId.value) {
+                onSnack(it, "OK", SnackActions.NONE)
+            }
         }
     }
 
@@ -48,7 +51,11 @@ fun AddCourseScreen(
                     BottomSheetItem(
                         icon = R.drawable.ic_baseline_group_add_24,
                         title = stringResource(R.string.join),
-                        onItemClick = { onJoinCourse(selectedId.value) }
+                        onItemClick = {
+                            onJoinCourse(selectedId.value)
+                            scope.launch { bottomSheetState.hide() }
+                            onSnack("Creando peticion...", "OK", SnackActions.NONE)
+                        }
                     ),
                     BottomSheetItem(
                         icon = R.drawable.ic_baseline_close_24,
