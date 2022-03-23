@@ -126,9 +126,7 @@ export const getCourses = async (req: Request, res: Response) => {
         return {
           _id: c.course,
           name: currentCourse.name,
-          teacher: (await collections.users.findOne({
-            _id: c.teacher,
-          })) as unknown as UserShort,
+          teacher: c.teacher,
           group: c.group,
         };
       }
