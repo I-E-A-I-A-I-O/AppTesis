@@ -57,15 +57,15 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
         _isLoading.value = true
 
         CoroutineScope(Dispatchers.IO).launch {
-            val savedCourses = coursesRepository.getSemesterCourses(id)
+            val session = sessionRepository.getFirstSession()
+            val savedCourses = coursesRepository.getSemesterCoursesUser(id, session.userId)
 
             CoroutineScope(Dispatchers.Main).launch {
                 _courses.value = savedCourses
             }
 
-            val token = sessionRepository.getToken()
             val network = Network()
-            network.service.getSemesterCourses(id, token).enqueue(
+            network.service.getSemesterCourses(id, session.token).enqueue(
                 object: Callback<GetSemesterCoursesResponse> {
                     override fun onResponse(
                         call: Call<GetSemesterCoursesResponse>,
@@ -102,7 +102,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                 if (toDB.isNotEmpty()) {
                                     coursesRepository.insertCourse(toDB)
                                     CoroutineScope(Dispatchers.Main).launch {
-                                        _courses.value = _courses.value?.plus(toDB)
+                                        _courses.value = savedCourses.plus(toDB)
                                     }
                                 }
                             }

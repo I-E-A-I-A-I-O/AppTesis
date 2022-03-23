@@ -8,6 +8,10 @@ class SessionRepository(private val sessionDao: SessionDao) {
         return sessionDao.getAll()
     }
 
+    suspend fun getFirstSession(): Session {
+        return sessionDao.getAll().first()
+    }
+
     suspend fun insertSession(session: Session) {
         sessionDao.insertAll(session)
     }

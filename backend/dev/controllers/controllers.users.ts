@@ -55,6 +55,7 @@ export const userLogin = async (req: Request, res: Response) => {
         email: search.email,
         name: search.name,
         ci: search.ci,
-        role: search.role
+        role: search.role,
+        id: search._id
     })
 }

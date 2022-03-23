@@ -112,7 +112,8 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
 
                                 val toDelete = savedCourses.mapNotNull { localCourse ->
                                     val inRemote = body.courses.find { remoteCourse ->
-                                        remoteCourse.id == localCourse.id
+                                        if (remoteCourse == null) false
+                                        else remoteCourse.id == localCourse.id
                                     }
 
                                     if (inRemote == null)
