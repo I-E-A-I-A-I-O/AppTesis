@@ -56,10 +56,9 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     private lateinit var modalBottomSheetState: ModalBottomSheetState
 
-
-    @ExperimentalPermissionsApi
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
+    @OptIn(ExperimentalPermissionsApi::class, ExperimentalComposeUiApi::class,
+        ExperimentalAnimationApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = Intent(this, LocationService::class.java)
@@ -71,10 +70,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
-    @ExperimentalPermissionsApi
-    @ExperimentalComposeUiApi
-    @ExperimentalAnimationApi
+    @OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
     @Composable
     fun TesisApp() {
         navHost = rememberAnimatedNavController()

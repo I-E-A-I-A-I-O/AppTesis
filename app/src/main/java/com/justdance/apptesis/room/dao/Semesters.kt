@@ -1,10 +1,8 @@
 package com.justdance.apptesis.room.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
+import androidx.room.OnConflictStrategy.REPLACE
 import com.justdance.apptesis.room.entities.Semesters
 import java.time.LocalDate
 
@@ -18,6 +16,9 @@ interface SemestersDao {
 
     @Query("SELECT * FROM semesters WHERE id = :id")
     suspend fun getById(id: String): Semesters?
+
+    @Update(onConflict = REPLACE)
+    suspend fun updateDate(vararg semester: Semesters)
 
     @Insert
     suspend fun insertAll(vararg semester: Semesters)

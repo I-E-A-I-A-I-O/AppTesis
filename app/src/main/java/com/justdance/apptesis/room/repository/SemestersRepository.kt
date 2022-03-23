@@ -23,6 +23,10 @@ class SemestersRepository(private val semestersDao: SemestersDao) {
         semestersDao.insertAll(*semesters.toTypedArray())
     }
 
+    suspend fun updateSemesterDate(semesters: ArrayList<Semesters>) {
+        semestersDao.updateDate(*semesters.toTypedArray())
+    }
+
     suspend fun insertSemester(semester: Semesters) {
         semestersDao.insertAll(semester)
     }

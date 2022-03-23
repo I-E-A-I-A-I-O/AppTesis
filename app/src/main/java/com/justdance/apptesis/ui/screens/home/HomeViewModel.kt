@@ -11,7 +11,6 @@ import com.justdance.apptesis.network.response.GetSemestersResponse
 import com.justdance.apptesis.room.AppDatabase
 import com.justdance.apptesis.room.entities.Courses
 import com.justdance.apptesis.room.entities.Semesters
-import com.justdance.apptesis.room.entities.Users
 import com.justdance.apptesis.room.repository.CoursesRepository
 import com.justdance.apptesis.room.repository.SemestersRepository
 import com.justdance.apptesis.room.repository.SessionRepository
@@ -145,6 +144,7 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 response.body()?.let { reBody: GetSemestersResponse ->
                                     val toDB: ArrayList<Semesters> = arrayListOf()
+                                    val toUpdate: ArrayList<Semesters> = arrayListOf()
 
                                     reBody.semesters.forEach { Semester ->
                                         val s = semesters.value?.find {
@@ -158,6 +158,19 @@ class HomeViewModel(app: Application): AndroidViewModel(app) {
                                                     LocalDate.parse(Semester.end)
                                                 ))
                                         }
+                                        else if (s.from != LocalDate.parse(Semester.start) || s.to != LocalDate.parse(Semester.end)) {
+                                            toUpdate.add(
+                                                Semesters(Semester.id,
+                                                    Semester.name,
+                                                    LocalDate.parse(Semester.start),
+                                                    LocalDate.parse(Semester.end)
+                                                )
+                                            )
+                                        }
+                                    }
+
+                                    if (toUpdate.isNotEmpty()) {
+                                        semestersRepository.updateSemesterDate(toUpdate)
                                     }
 
                                     if (toDB.isNotEmpty()) {

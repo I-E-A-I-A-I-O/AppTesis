@@ -114,11 +114,11 @@ export const getCourses = async (req: Request, res: Response) => {
     const cSearch = collections.courses.find({ _id: { $in: [...courseIds] } });
     const cSearchArr = (await cSearch.toArray()) as Course[];
     logger.warn(
-      `GET for courses with IDs ${courseIds.toString()}. Result: ${cSearchArr.toString()}`
+      `GET for courses with IDs ${courseIds.toString()}. Result: ${JSON.stringify(cSearchArr)}`
     );
     const coursesPromise = results.map(async (c) => {
       const index = cSearchArr.findIndex(
-        (v) => v._id.toString() === c.course.toString()
+        (v) => JSON.stringify(v._id) === JSON.stringify(c.course)
       );
 
       if (index !== -1) {
@@ -136,9 +136,7 @@ export const getCourses = async (req: Request, res: Response) => {
 
     const courses = await Promise.all(coursesPromise);
     logger.warn(
-      `All courses filtered for user ${
-        uSearch._id
-      }. Results: ${courses.toString()}`
+      `All courses filtered for user ${uSearch._id}. Results: ${JSON.stringify(courses)}`
     );
 
     res.status(200).json({

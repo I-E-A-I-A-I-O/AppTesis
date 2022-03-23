@@ -10,7 +10,6 @@ import com.justdance.apptesis.network.Network
 import com.justdance.apptesis.network.response.GetSemesterResponse
 import com.justdance.apptesis.room.AppDatabase
 import com.justdance.apptesis.room.entities.Courses
-import com.justdance.apptesis.room.entities.Users
 import com.justdance.apptesis.room.repository.CoursesRepository
 import com.justdance.apptesis.room.repository.SemestersRepository
 import com.justdance.apptesis.room.repository.SessionRepository
@@ -97,7 +96,6 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
                                         }
 
                                         if (c == null) {
-                                            Log.d("TEST", "$Course")
                                             toDB.add(
                                                 Courses(
                                                     Course.id,
