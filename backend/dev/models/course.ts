@@ -13,7 +13,8 @@ export class JoinCourse {
         public semesterId: ObjectId,
         public studentId: ObjectId,
         public courseId: ObjectId,
-        public status: String,
+        public group: string,
+        public status: "Pending" | "Declined" | "Accepted",
         public _id?: ObjectId
     ) {}
 }

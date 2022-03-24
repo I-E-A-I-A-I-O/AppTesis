@@ -47,7 +47,7 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
     private var _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun joinCourse(id: String, onDone: (message: String) -> Unit) {
+    fun joinCourse(id: String, group: String, onDone: (message: String) -> Unit) {
         _isLoading.value = true
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -55,7 +55,7 @@ class AddCourseViewModel(app: Application): AndroidViewModel(app) {
             val network = Network()
             var message = ""
             try {
-                val res = network.service.joinCourse(id, token).execute()
+                val res = network.service.joinCourse(id, token, group).execute()
 
                 if (res.isSuccessful) {
                     message = "Peticion creada."

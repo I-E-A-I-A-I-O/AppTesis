@@ -1,5 +1,6 @@
 package com.justdance.apptesis.network
 
+import com.justdance.apptesis.network.request.CourseJoinRequest
 import com.justdance.apptesis.network.request.UserLogin
 import com.justdance.apptesis.network.request.UserRegister
 import com.justdance.apptesis.network.response.*
@@ -35,8 +36,12 @@ interface Requests {
     @GET("school/semesters/current")
     fun getCurrentSemester(@Header("authorization") token: String): Call<GetSemesterResponse>
 
-    @GET("school/semesters/current/courses/{course}/request")
-    fun joinCourse(@Path(value = "course", encoded = true) courseId: String, @Header("authorization") token: String): Call<GenericResponse>
+    @GET("school/semesters/current/courses/{course}/{group}")
+    fun joinCourse(@Path(value = "course", encoded = true) courseId: String, @Path(value = "group", encoded = true) group: String, @Header("authorization") token: String): Call<GenericResponse>
+
+    @Headers("Content-Type: application/json")
+    @PUT("school/requests/handle")
+    fun handleCourseRequest(@Header("authorization") token: String, @Body requestHandle: CourseJoinRequest): Call<GenericResponse>
 }
 
 class Network {

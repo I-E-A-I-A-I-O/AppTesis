@@ -32,9 +32,10 @@ fun AddCourseScreen(
     val bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     val selectedId = remember { mutableStateOf("") }
+    val selectedGroup = remember { mutableStateOf("") }
     val onJoinCourse = { id: String ->
         if (id.isNotEmpty().and(loading.not())) {
-            viewModel.joinCourse(selectedId.value) {
+            viewModel.joinCourse(selectedId.value, selectedGroup.value) {
                 onSnack(it, "OK", SnackActions.NONE)
             }
         }
@@ -79,6 +80,7 @@ fun AddCourseScreen(
                     CardItem(title = item.name, info1 = "Seccion ${item.group}", info2 = "") {
                         scope.launch {
                             selectedId.value = item.id
+                            selectedGroup.value = item.group
                             bottomSheetState.show()
                         }
                     }

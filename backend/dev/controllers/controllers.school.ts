@@ -2,14 +2,10 @@ import { Request, Response } from "express";
 import logger from "../utils/logger";
 import { collections } from "../services/database.service";
 import { Semester, SemesterCourse } from "../models/semesters";
-import { User, UserShort } from "../models/user";
+import { User } from "../models/user";
 import { ObjectId } from "mongodb";
 import { Course, JoinCourse } from "../models/course";
-import { userLogin } from "./controllers.users";
-import {
-  TeacherHandleRequestBody,
-  OperationType,
-} from "../models/course.request";
+import { TeacherHandleRequestBody } from "../models/course.request";
 
 export const getSemesters = async (req: Request, res: Response) => {
   try {
@@ -244,7 +240,7 @@ export const requestCourseInvite = async (req: Request, res: Response) => {
     return res.status(404).json({ message: "C.I no encontrada." });
   }
 
-  const { courseId } = req.params;
+  const { courseId, group } = req.params;
 
   try {
     const courseInfo = await collections.courses.findOne({
@@ -275,7 +271,7 @@ export const requestCourseInvite = async (req: Request, res: Response) => {
     }
 
     const courseFind = currentSemester.courses.find(
-      (v) => JSON.stringify(v.course) === JSON.stringify(courseId)
+      (v) => JSON.stringify(v.course) === JSON.stringify(courseId) && v.group === group
     );
 
     if (!courseFind) {
@@ -303,7 +299,8 @@ export const requestCourseInvite = async (req: Request, res: Response) => {
       currentSemester._id,
       uSearch._id,
       new ObjectId(courseId),
-      "Pendiente"
+      group,
+      "Pending"
     );
 
     collections.joinRequests.insertOne(request);
@@ -317,7 +314,7 @@ export const requestCourseInvite = async (req: Request, res: Response) => {
   }
 };
 
-const handleInvite = async (req: Request, res: Response) => {
+export const handleInvite = async (req: Request, res: Response) => {
   if (req.user.role !== "teacher")
     return res
       .status(401)
@@ -346,18 +343,27 @@ const handleInvite = async (req: Request, res: Response) => {
       .json({ message: "No se pudo procesar la operacion." });
   }
 
-  if (body.operationType === OperationType.Accept) {
+  if (body.operationType === "Accept") {
     await collections.joinRequests.findOneAndUpdate(
       { _id: body.requestId },
-      { status: "accepted" }
+      { status: "Accepted" }
     );
-    await collections.semesters.findOneAndUpdate(
+    const semester = await collections.semesters.findOne(
       {
         _id: request.semesterId,
         "courses._id": request.courseId,
-      },
-      {}
-    );
+      }
+    ) as Semester;
+    semester.courses.find((el) => 
+      JSON.stringify(el.course) === JSON.stringify(request.courseId) && el.group === request.group
+    ).students.push(uSearch._id);
+    await collections.semesters.findOneAndReplace({ _id: request.semesterId }, semester)
+    res.status(200).json({ message: "Estudiante aceptado" })
   } else {
+    await collections.joinRequests.findOneAndUpdate(
+      { _id: body.requestId },
+      { status: "Declined" }
+    );
+    res.status(200).json({ message: "Estudiante rechazado" })
   }
 };

@@ -1,9 +1,10 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import {
   getCourses,
   getCurrentSemester,
   getSemesters,
   requestCourseInvite,
+  handleInvite
 } from "../controllers/controllers.school";
 import { authenticateToken } from "../utils/token.middleware";
 
@@ -16,7 +17,9 @@ schoolRouter.get("/semesters/current", authenticateToken, getCurrentSemester);
 schoolRouter.get("/semesters/:semester/courses", authenticateToken, getCourses);
 
 schoolRouter.post(
-  "/semesters/current/courses/:courseId/request",
+  "/semesters/current/courses/:courseId/:group",
   authenticateToken,
   requestCourseInvite
 );
+
+schoolRouter.put("/requests/handle", authenticateToken, handleInvite);
